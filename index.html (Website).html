@@ -208,6 +208,33 @@
   .cat-card.makeup  { background-image: url('https://images.unsplash.com/photo-1636023730877-233b9237d4ec?w=900&q=80&auto=format&fit=crop'); }
   .cat-card.lash    { background-image: url('https://images.unsplash.com/photo-1639629509821-c54cdd984227?w=900&q=80&auto=format&fit=crop'); }
 
+  /* Coming Soon category cards: dimmed, no photo, with gold badge */
+  .cat-card.coming-soon {
+    opacity: 0.65;
+    cursor: default;
+    background-image: none !important;
+  }
+  .cat-card.coming-soon:hover { transform: none; }
+  .cat-card.coming-soon:hover::before {
+    background: linear-gradient(180deg, rgba(13,27,62,0.55) 0%, rgba(13,27,62,0.96) 100%);
+  }
+  .cat-card.coming-soon:hover .cat-name::after { width: 36px; }
+  .cat-badge {
+    position: absolute;
+    top: 14px; right: 14px;
+    background: var(--gold);
+    color: var(--navy);
+    font-family: 'Inter', sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    padding: 5px 11px;
+    border-radius: 999px;
+    text-transform: uppercase;
+    z-index: 3;
+    white-space: nowrap;
+  }
+
   .cat-number {
     font-family: 'Lora', serif; font-size: 13px; font-style: italic;
     color: var(--gold); letter-spacing: 0.05em;
@@ -386,7 +413,7 @@
   <div class="hero-side left">
     <span class="hero-eyebrow" data-i18n="hero_pros_eyebrow">For Beauty Pros</span>
     <h1 class="hero-headline" data-i18n-html="hero_pros_headline">Your craft.<br>Your prices.<br>Your <em>clients</em>.</h1>
-    <p class="hero-sub" data-i18n="hero_pros_sub">$19.99/month + tax. Zero commission. Built and designed for barbers, stylists, nail techs, spa & wellness pros, makeup artists, and lash & brow specialists.</p>
+    <p class="hero-sub" data-i18n="hero_pros_sub">$19.99/month + tax. Zero commission. Built and designed for personal care professionals.</p>
     <div class="hero-cta-row">
       <a href="#get" class="btn-primary">
         <span data-i18n="hero_pros_cta">Join as a pro</span>
@@ -418,15 +445,15 @@
 </section>
 
 <section class="categories" id="categories">
-  <span class="section-eyebrow" data-i18n="cat_eyebrow">Six worlds, one marketplace</span>
+  <span class="section-eyebrow" data-i18n="cat_eyebrow">Nine worlds, one marketplace</span>
   <h2 class="section-title" data-i18n-html="cat_title">Whatever you do, <em>you belong here</em>.</h2>
-  <p class="section-lede" data-i18n="cat_lede">RezTheLook is built and designed for professionals who run on appointments — starting with beauty, with more to come.</p>
+  <p class="section-lede" data-i18n="cat_lede">RezTheLook is built and designed for professionals who run on appointments — starting with personal care, with more to come.</p>
 
   <div class="cat-grid">
     <div class="cat-card barber">
       <span class="cat-number">01</span>
       <h3 class="cat-name" data-i18n="cat_barber_name">Barbers</h3>
-      <p class="cat-desc" data-i18n="cat_barber_desc">Cuts, fades, beard work, line-ups, kids' cuts.</p>
+      <p class="cat-desc" data-i18n="cat_barber_desc">Cuts, fades, beard work, shape-ups, kids' cuts.</p>
     </div>
     <div class="cat-card stylist">
       <span class="cat-number">02</span>
@@ -452,6 +479,24 @@
       <span class="cat-number">06</span>
       <h3 class="cat-name" data-i18n="cat_lash_name">Lash & Brow</h3>
       <p class="cat-desc" data-i18n="cat_lash_desc">Extensions, lifts, tints, lamination, threading.</p>
+    </div>
+    <div class="cat-card coming-soon">
+      <span class="cat-badge" data-i18n="cat_coming_soon">Coming Soon</span>
+      <span class="cat-number">07</span>
+      <h3 class="cat-name" data-i18n="cat_tattoo_name">Tattoos</h3>
+      <p class="cat-desc" data-i18n="cat_tattoo_desc">Custom designs, lettering, cover-ups, touch-ups, flash.</p>
+    </div>
+    <div class="cat-card coming-soon">
+      <span class="cat-badge" data-i18n="cat_coming_soon">Coming Soon</span>
+      <span class="cat-number">08</span>
+      <h3 class="cat-name" data-i18n="cat_hairremoval_name">Hair Removal</h3>
+      <p class="cat-desc" data-i18n="cat_hairremoval_desc">Waxing, sugaring, threading, laser, electrolysis.</p>
+    </div>
+    <div class="cat-card coming-soon">
+      <span class="cat-badge" data-i18n="cat_coming_soon">Coming Soon</span>
+      <span class="cat-number">09</span>
+      <h3 class="cat-name" data-i18n="cat_braids_name">Braids & Locs</h3>
+      <p class="cat-desc" data-i18n="cat_braids_desc">Box braids, knotless, locs, twists, cornrows.</p>
     </div>
   </div>
 </section>
@@ -528,7 +573,7 @@
         <li>
           <span class="why-mark">iv.</span>
           <div class="why-text">
-            <strong data-i18n="why_clients_4_t">All beauty, one app</strong>
+            <strong data-i18n="why_clients_4_t">All appointments, one app</strong>
             <span data-i18n="why_clients_4_d">Find a barber, a stylist, a nail tech, a spa & wellness pro, a makeup artist, or a lash & brow specialist — all in one place.</span>
           </div>
         </li>
@@ -592,22 +637,26 @@ const T = {
     nav_categories: "Categories", nav_why: "Why us", nav_get: "Get the app",
     hero_pros_eyebrow: "For Beauty Pros",
     hero_pros_headline: "Your craft.<br>Your prices.<br>Your <em>clients</em>.",
-    hero_pros_sub: "$19.99/month + tax. Zero commission. Built and designed for barbers, stylists, nail techs, spa & wellness pros, makeup artists, and lash & brow specialists.",
+    hero_pros_sub: "$19.99/month + tax. Zero commission. Built and designed for personal care professionals.",
     hero_pros_cta: "Join as a pro", hero_pros_link: "Why pros switch →",
     hero_clients_eyebrow: "For Clients",
     hero_clients_headline: "Find your pro.<br>Book in <em>your language</em>.",
     hero_clients_sub: "Book any beauty pro directly. No service fees, no markups. Available in 11 languages.",
     hero_clients_cta: "Find your pro", hero_clients_link: "Browse categories →",
     ribbon_label: "One word. Eleven languages.",
-    cat_eyebrow: "Six worlds, one marketplace",
+    cat_eyebrow: "Nine worlds, one marketplace",
     cat_title: "Whatever you do, <em>you belong here</em>.",
-    cat_lede: "RezTheLook is built and designed for professionals who run on appointments — starting with beauty, with more to come.",
-    cat_barber_name: "Barbers", cat_barber_desc: "Cuts, fades, beard work, line-ups, kids' cuts.",
+    cat_lede: "RezTheLook is built and designed for professionals who run on appointments — starting with personal care, with more to come.",
+    cat_barber_name: "Barbers", cat_barber_desc: "Cuts, fades, beard work, shape-ups, kids' cuts.",
     cat_stylist_name: "Stylists", cat_stylist_desc: "Color, highlights, blowouts, updos, extensions.",
     cat_nails_name: "Nail Techs", cat_nails_desc: "Manicures, pedicures, gels, acrylics, nail art.",
     cat_spa_name: "Spa & Wellness", cat_spa_desc: "Massage, facials, body work, waxing, hot stone.",
     cat_makeup_name: "Makeup Artists", cat_makeup_desc: "Bridal, special events, photoshoots, lessons.",
     cat_lash_name: "Lash & Brow", cat_lash_desc: "Extensions, lifts, tints, lamination, threading.",
+    cat_tattoo_name: "Tattoos", cat_tattoo_desc: "Custom designs, lettering, cover-ups, touch-ups, flash.",
+    cat_hairremoval_name: "Hair Removal", cat_hairremoval_desc: "Waxing, sugaring, threading, laser, electrolysis.",
+    cat_braids_name: "Braids & Locs", cat_braids_desc: "Box braids, knotless, locs, twists, cornrows.",
+    cat_coming_soon: "Coming Soon",
     why_pros_eyebrow: "For Pros",
     why_pros_title: "Built around <em>your business</em>, not ours.",
     why_pros_1_t: "Flat $19.99/month + tax", why_pros_1_d: "One predictable price. No tiered plans, no hidden upgrades, no per-booking fees.",
@@ -620,7 +669,7 @@ const T = {
     why_clients_1_t: "Direct booking", why_clients_1_d: "You book with the pro, not a middle layer. No service fees added at checkout.",
     why_clients_2_t: "Eleven languages", why_clients_2_d: "English, Spanish, Portuguese (Brazil), Portuguese (Portugal), French, Italian, Chinese, Japanese, Korean, Russian, Polish.",
     why_clients_3_t: "Real pros", why_clients_3_d: "People running their own appointments. Real reviews from those who've booked with them.",
-    why_clients_4_t: "All beauty, one app", why_clients_4_d: "Find a barber, a stylist, a nail tech, a spa & wellness pro, a makeup artist, or a lash & brow specialist — all in one place.",
+    why_clients_4_t: "All appointments, one app", why_clients_4_d: "Find a barber, a stylist, a nail tech, a spa & wellness pro, a makeup artist, or a lash & brow specialist — all in one place.",
     launch_eyebrow: "Launching soon",
     launch_title: "Almost ready to <em>start booking appointments</em>.",
     launch_lede: "RezTheLook is in the final stretch. App Store and Google Play submissions are coming. Watch this page — we'll have download links here the moment we're live.",
@@ -634,22 +683,26 @@ const T = {
     nav_categories: "Categorías", nav_why: "Por qué", nav_get: "Descargar app",
     hero_pros_eyebrow: "Para profesionales",
     hero_pros_headline: "Tu arte.<br>Tus precios.<br>Tus <em>clientes</em>.",
-    hero_pros_sub: "$19.99/mes + impuestos. Cero comisión. Hecho y diseñado para barberos, estilistas, técnicos de uñas, spa, maquilladores y especialistas en pestañas y cejas.",
+    hero_pros_sub: "$19.99/mes + impuestos. Cero comisión. Hecho y diseñado para profesionales del cuidado personal.",
     hero_pros_cta: "Únete como pro", hero_pros_link: "Por qué cambian →",
     hero_clients_eyebrow: "Para clientes",
     hero_clients_headline: "Encuentra tu pro.<br>Reserva en <em>tu idioma</em>.",
     hero_clients_sub: "Reserva con cualquier profesional de belleza directamente. Sin cargos, sin recargos. Disponible en 11 idiomas.",
     hero_clients_cta: "Encuentra tu pro", hero_clients_link: "Ver categorías →",
     ribbon_label: "Una palabra. Once idiomas.",
-    cat_eyebrow: "Seis mundos, un marketplace",
+    cat_eyebrow: "Nueve mundos, un marketplace",
     cat_title: "Lo que sea que hagas, <em>aquí perteneces</em>.",
-    cat_lede: "RezTheLook está construido y diseñado para profesionales que trabajan por citas — empezamos con belleza, con más por venir.",
+    cat_lede: "RezTheLook está construido y diseñado para profesionales que trabajan por citas — empezamos con el cuidado personal, con más por venir.",
     cat_barber_name: "Barberos", cat_barber_desc: "Cortes, degradados, barba, perfilados, cortes infantiles.",
     cat_stylist_name: "Estilistas", cat_stylist_desc: "Color, mechas, brushing, recogidos, extensiones.",
     cat_nails_name: "Técnicos de uñas", cat_nails_desc: "Manicura, pedicura, gel, acrílico, nail art.",
     cat_spa_name: "Spa y Bienestar", cat_spa_desc: "Masajes, faciales, corporales, depilación, piedras calientes.",
     cat_makeup_name: "Maquilladores", cat_makeup_desc: "Novias, eventos, sesiones de foto, clases.",
     cat_lash_name: "Pestañas y Cejas", cat_lash_desc: "Extensiones, lifting, tintes, laminación, hilo.",
+    cat_tattoo_name: "Tatuajes", cat_tattoo_desc: "Diseños personalizados, letras, cobertura, retoques, flash.",
+    cat_hairremoval_name: "Depilación", cat_hairremoval_desc: "Cera, azúcar, hilo, láser, electrólisis.",
+    cat_braids_name: "Trenzas y Locs", cat_braids_desc: "Trenzas box, sin nudos, locs, twists, cornrows.",
+    cat_coming_soon: "Próximamente",
     why_pros_eyebrow: "Para profesionales",
     why_pros_title: "Hecho para <em>tu negocio</em>, no el nuestro.",
     why_pros_1_t: "$19.99/mes + impuestos", why_pros_1_d: "Un precio predecible. Sin planes por niveles, sin actualizaciones ocultas, sin cargos por reserva.",
@@ -662,7 +715,7 @@ const T = {
     why_clients_1_t: "Reserva directa", why_clients_1_d: "Reservas con el pro, no con un intermediario. Sin cargos añadidos en el checkout.",
     why_clients_2_t: "Once idiomas", why_clients_2_d: "Inglés, español, portugués (Brasil), portugués (Portugal), francés, italiano, chino, japonés, coreano, ruso, polaco.",
     why_clients_3_t: "Pros reales", why_clients_3_d: "Personas gestionando sus propias citas. Reseñas reales de quienes han reservado con ellos.",
-    why_clients_4_t: "Toda la belleza, una app", why_clients_4_d: "Encuentra un barbero, una estilista, un técnico de uñas, un profesional de spa y bienestar, un maquillador o un especialista en pestañas y cejas — todo en un solo lugar.",
+    why_clients_4_t: "Todas las citas, una app", why_clients_4_d: "Encuentra un barbero, una estilista, un técnico de uñas, un profesional de spa y bienestar, un maquillador o un especialista en pestañas y cejas — todo en un solo lugar.",
     launch_eyebrow: "Próximamente",
     launch_title: "Casi listos para <em>empezar a recibir reservas</em>.",
     launch_lede: "RezTheLook está en la recta final. Pronto en App Store y Google Play. Vuelve a esta página — pondremos los enlaces de descarga aquí en cuanto estemos en vivo.",
@@ -676,22 +729,26 @@ const T = {
     nav_categories: "Categorias", nav_why: "Por que", nav_get: "Baixar app",
     hero_pros_eyebrow: "Para profissionais",
     hero_pros_headline: "Seu ofício.<br>Seus preços.<br>Seus <em>clientes</em>.",
-    hero_pros_sub: "$19,99/mês + impostos. Zero comissão. Construído e desenhado para barbeiros, cabeleireiros, manicures, profissionais de spa, maquiadores e especialistas em cílios e sobrancelhas.",
+    hero_pros_sub: "$19,99/mês + impostos. Zero comissão. Construído e desenhado para profissionais de cuidado pessoal.",
     hero_pros_cta: "Entrar como profissional", hero_pros_link: "Por que mudam →",
     hero_clients_eyebrow: "Para clientes",
     hero_clients_headline: "Encontre seu profissional.<br>Agende no <em>seu idioma</em>.",
     hero_clients_sub: "Agende com qualquer profissional de beleza diretamente. Sem taxas, sem acréscimos. Disponível em 11 idiomas.",
     hero_clients_cta: "Encontre seu pro", hero_clients_link: "Ver categorias →",
     ribbon_label: "Uma palavra. Onze idiomas.",
-    cat_eyebrow: "Seis mundos, um marketplace",
+    cat_eyebrow: "Nove mundos, um marketplace",
     cat_title: "O que você fizer, <em>seu lugar é aqui</em>.",
-    cat_lede: "RezTheLook é construído e desenhado para profissionais que trabalham por agendamentos — começando com beleza, com mais por vir.",
+    cat_lede: "RezTheLook é construído e desenhado para profissionais que trabalham por agendamentos — começando com cuidado pessoal, com mais por vir.",
     cat_barber_name: "Barbeiros", cat_barber_desc: "Cortes, degradês, barba, acabamentos, cortes infantis.",
     cat_stylist_name: "Cabeleireiros", cat_stylist_desc: "Coloração, mechas, escova, penteados, extensões.",
     cat_nails_name: "Manicures", cat_nails_desc: "Manicure, pedicure, gel, acrílico, nail art.",
     cat_spa_name: "Spa e Bem-estar", cat_spa_desc: "Massagem, limpeza de pele, corporais, depilação, pedras quentes.",
     cat_makeup_name: "Maquiadores", cat_makeup_desc: "Noivas, eventos, ensaios, aulas.",
     cat_lash_name: "Cílios e Sobrancelhas", cat_lash_desc: "Extensões, lifting, tinturas, laminação, design.",
+    cat_tattoo_name: "Tatuagens", cat_tattoo_desc: "Designs personalizados, lettering, cobertura, retoques, flash.",
+    cat_hairremoval_name: "Depilação", cat_hairremoval_desc: "Cera, açúcar, linha, laser, eletrólise.",
+    cat_braids_name: "Tranças e Dreads", cat_braids_desc: "Box braids, sem nó, dreads, twists, cornrows.",
+    cat_coming_soon: "Em breve",
     why_pros_eyebrow: "Para profissionais",
     why_pros_title: "Feito para <em>o seu negócio</em>, não para o nosso.",
     why_pros_1_t: "$19,99/mês + impostos", why_pros_1_d: "Um preço previsível. Sem planos por níveis, sem upgrades escondidos, sem taxa por agendamento.",
@@ -704,7 +761,7 @@ const T = {
     why_clients_1_t: "Agendamento direto", why_clients_1_d: "Você agenda com o profissional, sem intermediários. Sem taxas no checkout.",
     why_clients_2_t: "Onze idiomas", why_clients_2_d: "Inglês, espanhol, português (Brasil), português (Portugal), francês, italiano, chinês, japonês, coreano, russo, polonês.",
     why_clients_3_t: "Profissionais reais", why_clients_3_d: "Pessoas gerenciando seus próprios agendamentos. Avaliações reais de quem já agendou com eles.",
-    why_clients_4_t: "Toda a beleza, um app", why_clients_4_d: "Encontre um barbeiro, um cabeleireiro, uma manicure, um profissional de spa e bem-estar, um maquiador ou uma especialista em cílios e sobrancelhas — tudo num só lugar.",
+    why_clients_4_t: "Todos os agendamentos, um app", why_clients_4_d: "Encontre um barbeiro, um cabeleireiro, uma manicure, um profissional de spa e bem-estar, um maquiador ou uma especialista em cílios e sobrancelhas — tudo num só lugar.",
     launch_eyebrow: "Em breve",
     launch_title: "Quase prontos para <em>começar a receber agendamentos</em>.",
     launch_lede: "RezTheLook está na reta final. Submissões na App Store e Google Play estão a caminho. Volte aqui — os links de download virão assim que estivermos no ar.",
@@ -718,22 +775,26 @@ const T = {
     nav_categories: "Categorias", nav_why: "Porquê", nav_get: "Obter app",
     hero_pros_eyebrow: "Para profissionais",
     hero_pros_headline: "O seu ofício.<br>Os seus preços.<br>Os seus <em>clientes</em>.",
-    hero_pros_sub: "$19,99/mês + impostos. Zero comissão. Construído e desenhado para barbeiros, cabeleireiros, manicures, profissionais de spa, maquilhadores e especialistas em pestanas e sobrancelhas.",
+    hero_pros_sub: "$19,99/mês + impostos. Zero comissão. Construído e desenhado para profissionais de cuidado pessoal.",
     hero_pros_cta: "Entrar como profissional", hero_pros_link: "Porque mudam →",
     hero_clients_eyebrow: "Para clientes",
     hero_clients_headline: "Encontre o seu profissional.<br>Reserve no <em>seu idioma</em>.",
     hero_clients_sub: "Reserve com qualquer profissional de beleza diretamente. Sem taxas, sem acréscimos. Disponível em 11 idiomas.",
     hero_clients_cta: "Encontrar profissional", hero_clients_link: "Ver categorias →",
     ribbon_label: "Uma palavra. Onze idiomas.",
-    cat_eyebrow: "Seis mundos, um marketplace",
+    cat_eyebrow: "Nove mundos, um marketplace",
     cat_title: "Faça o que fizer, <em>pertence aqui</em>.",
-    cat_lede: "RezTheLook é construído e desenhado para profissionais que trabalham por marcações — começando com beleza, com mais por vir.",
+    cat_lede: "RezTheLook é construído e desenhado para profissionais que trabalham por marcações — começando com cuidado pessoal, com mais por vir.",
     cat_barber_name: "Barbeiros", cat_barber_desc: "Cortes, degradês, barba, acabamentos, cortes infantis.",
     cat_stylist_name: "Cabeleireiros", cat_stylist_desc: "Cor, madeixas, brushing, penteados, extensões.",
     cat_nails_name: "Manicures", cat_nails_desc: "Manicure, pedicure, gel, acrílico, nail art.",
     cat_spa_name: "Spa e Bem-estar", cat_spa_desc: "Massagens, limpezas de pele, corporais, depilação, pedras quentes.",
     cat_makeup_name: "Maquilhadores", cat_makeup_desc: "Noivas, eventos, sessões fotográficas, aulas.",
     cat_lash_name: "Pestanas e Sobrancelhas", cat_lash_desc: "Extensões, lifting, tintas, laminação, design.",
+    cat_tattoo_name: "Tatuagens", cat_tattoo_desc: "Designs personalizados, lettering, cobertura, retoques, flash.",
+    cat_hairremoval_name: "Depilação", cat_hairremoval_desc: "Cera, açúcar, linha, laser, eletrólise.",
+    cat_braids_name: "Tranças e Rastas", cat_braids_desc: "Box braids, sem nó, rastas, twists, cornrows.",
+    cat_coming_soon: "Em breve",
     why_pros_eyebrow: "Para profissionais",
     why_pros_title: "Feito à volta do <em>seu negócio</em>, não do nosso.",
     why_pros_1_t: "$19,99/mês + impostos", why_pros_1_d: "Um preço previsível. Sem planos por níveis, sem upgrades escondidos, sem taxa por reserva.",
@@ -746,7 +807,7 @@ const T = {
     why_clients_1_t: "Reserva direta", why_clients_1_d: "Reserva com o profissional, sem intermediários. Sem taxas no checkout.",
     why_clients_2_t: "Onze idiomas", why_clients_2_d: "Inglês, espanhol, português (Brasil), português (Portugal), francês, italiano, chinês, japonês, coreano, russo, polaco.",
     why_clients_3_t: "Profissionais reais", why_clients_3_d: "Pessoas a gerir as suas próprias marcações. Avaliações reais de quem já marcou com eles.",
-    why_clients_4_t: "Toda a beleza, uma app", why_clients_4_d: "Encontre um barbeiro, um cabeleireiro, uma manicure, um profissional de spa e bem-estar, um maquilhador ou uma especialista em pestanas e sobrancelhas — tudo num só sítio.",
+    why_clients_4_t: "Todas as marcações, uma app", why_clients_4_d: "Encontre um barbeiro, um cabeleireiro, uma manicure, um profissional de spa e bem-estar, um maquilhador ou uma especialista em pestanas e sobrancelhas — tudo num só sítio.",
     launch_eyebrow: "Em breve",
     launch_title: "Quase prontos para <em>começar a receber marcações</em>.",
     launch_lede: "RezTheLook está na reta final. Submissões na App Store e Google Play estão a caminho. Volte aqui — os links de descarga estarão aqui assim que estivermos no ar.",
@@ -760,22 +821,26 @@ const T = {
     nav_categories: "Catégories", nav_why: "Pourquoi", nav_get: "Obtenir l'app",
     hero_pros_eyebrow: "Pour les pros de la beauté",
     hero_pros_headline: "Votre art.<br>Vos prix.<br>Vos <em>clients</em>.",
-    hero_pros_sub: "19,99 $/mois + taxes. Zéro commission. Construit et conçu pour les barbiers, coiffeurs, prothésistes ongulaires, pros du spa, maquilleurs et spécialistes cils & sourcils.",
+    hero_pros_sub: "19,99 $/mois + taxes. Zéro commission. Construit et conçu pour les professionnels des soins personnels.",
     hero_pros_cta: "Rejoindre comme pro", hero_pros_link: "Pourquoi changer →",
     hero_clients_eyebrow: "Pour les clients",
     hero_clients_headline: "Trouvez votre pro.<br>Réservez dans <em>votre langue</em>.",
     hero_clients_sub: "Réservez directement avec n'importe quel pro de la beauté. Aucuns frais, aucune majoration. Disponible en 11 langues.",
     hero_clients_cta: "Trouver mon pro", hero_clients_link: "Voir les catégories →",
     ribbon_label: "Un mot. Onze langues.",
-    cat_eyebrow: "Six univers, un marché",
+    cat_eyebrow: "Neuf univers, un marché",
     cat_title: "Quel que soit votre métier, <em>votre place est ici</em>.",
-    cat_lede: "RezTheLook est construit et conçu pour les professionnels qui travaillent sur rendez-vous — en commençant par la beauté, avec plus à venir.",
+    cat_lede: "RezTheLook est construit et conçu pour les professionnels qui travaillent sur rendez-vous — en commençant par les soins personnels, avec plus à venir.",
     cat_barber_name: "Barbiers", cat_barber_desc: "Coupes, dégradés, barbe, contours, coupes enfants.",
     cat_stylist_name: "Coiffeurs", cat_stylist_desc: "Coloration, mèches, brushings, chignons, extensions.",
     cat_nails_name: "Prothésistes ongulaires", cat_nails_desc: "Manucure, pédicure, gel, acrylique, nail art.",
     cat_spa_name: "Spa et Bien-être", cat_spa_desc: "Massages, soins du visage, corps, épilation, pierres chaudes.",
     cat_makeup_name: "Maquilleurs", cat_makeup_desc: "Mariées, événements, séances photo, cours.",
     cat_lash_name: "Cils et Sourcils", cat_lash_desc: "Extensions, rehaussements, teintures, lamination, fil.",
+    cat_tattoo_name: "Tatouages", cat_tattoo_desc: "Designs personnalisés, lettrage, recouvrement, retouches, flash.",
+    cat_hairremoval_name: "Épilation", cat_hairremoval_desc: "Cire, sucre, fil, laser, électrolyse.",
+    cat_braids_name: "Tresses & Locs", cat_braids_desc: "Box braids, sans nœud, locs, twists, cornrows.",
+    cat_coming_soon: "Bientôt disponible",
     why_pros_eyebrow: "Pour les pros",
     why_pros_title: "Pensé pour <em>votre activité</em>, pas la nôtre.",
     why_pros_1_t: "19,99 $/mois + taxes", why_pros_1_d: "Un tarif prévisible. Pas de plans par niveaux, pas de mises à niveau cachées, pas de frais par réservation.",
@@ -788,7 +853,7 @@ const T = {
     why_clients_1_t: "Réservation directe", why_clients_1_d: "Vous réservez avec le pro, pas un intermédiaire. Aucun frais ajouté au paiement.",
     why_clients_2_t: "Onze langues", why_clients_2_d: "Anglais, espagnol, portugais (Brésil), portugais (Portugal), français, italien, chinois, japonais, coréen, russe, polonais.",
     why_clients_3_t: "Vrais pros", why_clients_3_d: "Des personnes gérant leurs propres rendez-vous. De vrais avis de ceux qui ont réservé avec eux.",
-    why_clients_4_t: "Toute la beauté, une app", why_clients_4_d: "Trouvez un barbier, un coiffeur, un prothésiste, un pro du spa et bien-être, un maquilleur ou un spécialiste cils et sourcils — tout au même endroit.",
+    why_clients_4_t: "Tous les rendez-vous, une app", why_clients_4_d: "Trouvez un barbier, un coiffeur, un prothésiste, un pro du spa et bien-être, un maquilleur ou un spécialiste cils et sourcils — tout au même endroit.",
     launch_eyebrow: "Bientôt disponible",
     launch_title: "Presque prêts à <em>commencer à recevoir des réservations</em>.",
     launch_lede: "RezTheLook est dans la dernière ligne droite. Les soumissions App Store et Google Play arrivent. Revenez ici — les liens de téléchargement apparaîtront dès le lancement.",
@@ -802,22 +867,26 @@ const T = {
     nav_categories: "Categorie", nav_why: "Perché", nav_get: "Scarica l'app",
     hero_pros_eyebrow: "Per i professionisti",
     hero_pros_headline: "Il tuo mestiere.<br>I tuoi prezzi.<br>I tuoi <em>clienti</em>.",
-    hero_pros_sub: "19,99 $/mese + tasse. Zero commissioni. Costruito e progettato per barbieri, parrucchieri, onicotecnici, professionisti spa, makeup artist e specialisti ciglia & sopracciglia.",
+    hero_pros_sub: "19,99 $/mese + tasse. Zero commissioni. Costruito e progettato per i professionisti della cura della persona.",
     hero_pros_cta: "Unisciti come pro", hero_pros_link: "Perché cambiano →",
     hero_clients_eyebrow: "Per i clienti",
     hero_clients_headline: "Trova il tuo pro.<br>Prenota nella <em>tua lingua</em>.",
     hero_clients_sub: "Prenota direttamente con qualsiasi professionista della bellezza. Nessuna commissione, nessuna maggiorazione. Disponibile in 11 lingue.",
     hero_clients_cta: "Trova il tuo pro", hero_clients_link: "Sfoglia le categorie →",
     ribbon_label: "Una parola. Undici lingue.",
-    cat_eyebrow: "Sei mondi, un marketplace",
+    cat_eyebrow: "Nove mondi, un marketplace",
     cat_title: "Qualunque cosa tu faccia, <em>questo è il tuo posto</em>.",
-    cat_lede: "RezTheLook è costruito e progettato per professionisti che lavorano su appuntamento — iniziando dalla bellezza, con altro in arrivo.",
+    cat_lede: "RezTheLook è costruito e progettato per professionisti che lavorano su appuntamento — iniziando dalla cura della persona, con altro in arrivo.",
     cat_barber_name: "Barbieri", cat_barber_desc: "Tagli, sfumature, barba, rifiniture, tagli bambini.",
     cat_stylist_name: "Parrucchieri", cat_stylist_desc: "Colore, colpi di sole, piega, raccolti, extension.",
     cat_nails_name: "Onicotecnici", cat_nails_desc: "Manicure, pedicure, gel, acrilico, nail art.",
     cat_spa_name: "Spa e Benessere", cat_spa_desc: "Massaggi, viso, corpo, ceretta, pietre calde.",
     cat_makeup_name: "Makeup Artist", cat_makeup_desc: "Spose, eventi, shooting, lezioni.",
     cat_lash_name: "Ciglia e Sopracciglia", cat_lash_desc: "Extension, lifting, tinture, laminazione, filo.",
+    cat_tattoo_name: "Tatuaggi", cat_tattoo_desc: "Design personalizzati, lettering, cover-up, ritocchi, flash.",
+    cat_hairremoval_name: "Depilazione", cat_hairremoval_desc: "Cera, sugaring, filo, laser, elettrolisi.",
+    cat_braids_name: "Trecce e Locs", cat_braids_desc: "Box braids, senza nodi, locs, twists, cornrows.",
+    cat_coming_soon: "Prossimamente",
     why_pros_eyebrow: "Per i pro",
     why_pros_title: "Costruito attorno al <em>tuo business</em>, non al nostro.",
     why_pros_1_t: "19,99 $/mese + tasse", why_pros_1_d: "Un prezzo prevedibile. Niente piani a livelli, niente upgrade nascosti, niente commissione per prenotazione.",
@@ -830,7 +899,7 @@ const T = {
     why_clients_1_t: "Prenotazione diretta", why_clients_1_d: "Prenoti con il pro, senza intermediari. Nessuna commissione al checkout.",
     why_clients_2_t: "Undici lingue", why_clients_2_d: "Inglese, spagnolo, portoghese (Brasile), portoghese (Portogallo), francese, italiano, cinese, giapponese, coreano, russo, polacco.",
     why_clients_3_t: "Pro veri", why_clients_3_d: "Persone che gestiscono i propri appuntamenti. Recensioni vere da chi ha prenotato con loro.",
-    why_clients_4_t: "Tutta la bellezza, un'app", why_clients_4_d: "Trova un barbiere, un parrucchiere, un onicotecnico, un pro di spa e benessere, un makeup artist o uno specialista ciglia e sopracciglia — tutto in un posto.",
+    why_clients_4_t: "Tutti gli appuntamenti, un'app", why_clients_4_d: "Trova un barbiere, un parrucchiere, un onicotecnico, un pro di spa e benessere, un makeup artist o uno specialista ciglia e sopracciglia — tutto in un posto.",
     launch_eyebrow: "In arrivo",
     launch_title: "Quasi pronti a <em>iniziare a ricevere prenotazioni</em>.",
     launch_lede: "RezTheLook è nella dirittura d'arrivo. App Store e Google Play in arrivo. Torna qui — i link di download appariranno appena saremo online.",
@@ -844,22 +913,26 @@ const T = {
     nav_categories: "服务类别", nav_why: "为什么选择", nav_get: "下载应用",
     hero_pros_eyebrow: "致美业专业人士",
     hero_pros_headline: "你的手艺。<br>你的定价。<br>你的<em>客户</em>。",
-    hero_pros_sub: "每月 $19.99 + 税。零佣金。为理发师、发型师、美甲师、水疗专业人士、化妆师和睫毛眉毛专家精心设计和打造。",
+    hero_pros_sub: "每月 $19.99 + 税。零佣金。为个人护理专业人士精心设计和打造。",
     hero_pros_cta: "以专业人士加入", hero_pros_link: "为什么他们都转过来 →",
     hero_clients_eyebrow: "致客户",
     hero_clients_headline: "找到你的专业人士。<br>用<em>你的语言</em>预约。",
     hero_clients_sub: "直接预约任何美业专业人士。无服务费、无加价。支持 11 种语言。",
     hero_clients_cta: "寻找专业人士", hero_clients_link: "浏览类别 →",
     ribbon_label: "一个词。十一种语言。",
-    cat_eyebrow: "六大世界,一个平台",
+    cat_eyebrow: "九大世界,一个平台",
     cat_title: "无论你做什么,<em>这里都属于你</em>。",
-    cat_lede: "RezTheLook 为按预约工作的专业人士设计和打造——从美业开始,更多即将到来。",
-    cat_barber_name: "理发师", cat_barber_desc: "理发、渐变、修须、轮廓、儿童剪发。",
+    cat_lede: "RezTheLook 为按预约工作的专业人士设计和打造——从个人护理开始,更多即将到来。",
+    cat_barber_name: "理发师", cat_barber_desc: "理发、渐变、修须、修型、儿童剪发。",
     cat_stylist_name: "发型师", cat_stylist_desc: "染色、挑染、吹整、盘发、接发。",
     cat_nails_name: "美甲师", cat_nails_desc: "修甲、足疗、凝胶、亚克力、美甲艺术。",
     cat_spa_name: "水疗和养生", cat_spa_desc: "按摩、面部护理、身体护理、脱毛、热石。",
     cat_makeup_name: "化妆师", cat_makeup_desc: "新娘、特殊场合、拍摄、教学。",
     cat_lash_name: "睫毛和眉毛", cat_lash_desc: "嫁接、翘睫、染色、层压、塑形。",
+    cat_tattoo_name: "纹身", cat_tattoo_desc: "定制设计、字体、遮盖、修补、现成图案。",
+    cat_hairremoval_name: "脱毛", cat_hairremoval_desc: "蜡疗、糖疗、线脱、激光、电解。",
+    cat_braids_name: "编发与脏辫", cat_braids_desc: "盒子辫、无结辫、脏辫、扭辫、玉米辫。",
+    cat_coming_soon: "即将推出",
     why_pros_eyebrow: "致专业人士",
     why_pros_title: "围绕<em>你的事业</em>而建,而非我们的。",
     why_pros_1_t: "每月 $19.99 + 税", why_pros_1_d: "一个可预测的价格。没有分级计划,没有隐藏升级,没有按单收费。",
@@ -872,7 +945,7 @@ const T = {
     why_clients_1_t: "直接预约", why_clients_1_d: "你直接与专业人士预约,没有中间层。结账时没有额外费用。",
     why_clients_2_t: "十一种语言", why_clients_2_d: "英语、西班牙语、葡萄牙语(巴西)、葡萄牙语(葡萄牙)、法语、意大利语、中文、日语、韩语、俄语、波兰语。",
     why_clients_3_t: "真实专业人士", why_clients_3_d: "人们管理着自己的预约。来自和他们预约过的人的真实评价。",
-    why_clients_4_t: "所有美容,一款应用", why_clients_4_d: "理发师、发型师、美甲师、水疗专业人士、化妆师、睫毛专家——都在一个地方。",
+    why_clients_4_t: "所有预约,一款应用", why_clients_4_d: "理发师、发型师、美甲师、水疗专业人士、化妆师、睫毛专家——都在一个地方。",
     launch_eyebrow: "即将推出",
     launch_title: "即将<em>开始接受预约</em>。",
     launch_lede: "RezTheLook 已进入最后冲刺。App Store 和 Google Play 提交即将到来。关注此页——上线后下载链接将在这里。",
@@ -886,22 +959,26 @@ const T = {
     nav_categories: "カテゴリ", nav_why: "選ばれる理由", nav_get: "アプリ入手",
     hero_pros_eyebrow: "ビューティープロの皆様へ",
     hero_pros_headline: "あなたの技。<br>あなたの価格。<br>あなたの<em>お客様</em>。",
-    hero_pros_sub: "月額 $19.99 + 税。手数料ゼロ。理容師、美容師、ネイリスト、スパセラピスト、メイクアップアーティスト、まつ毛・眉スペシャリストのために設計・構築されました。",
+    hero_pros_sub: "月額 $19.99 + 税。手数料ゼロ。パーソナルケアの専門家のために設計・構築されました。",
     hero_pros_cta: "プロとして登録", hero_pros_link: "なぜプロが選ぶのか →",
     hero_clients_eyebrow: "お客様へ",
     hero_clients_headline: "あなたのプロを見つける。<br><em>あなたの言語</em>で予約。",
     hero_clients_sub: "どんなビューティープロにも直接予約。サービス料・上乗せ料金なし。11言語対応。",
     hero_clients_cta: "プロを探す", hero_clients_link: "カテゴリを見る →",
     ribbon_label: "ひとつの言葉、11の言語。",
-    cat_eyebrow: "6つの世界、ひとつのマーケットプレイス",
+    cat_eyebrow: "9つの世界、ひとつのマーケットプレイス",
     cat_title: "あなたが何をしていても、<em>ここはあなたの場所</em>。",
-    cat_lede: "RezTheLookは予約制で働くプロフェッショナルのために設計・構築されました——美容から始まり、さらに展開予定。",
-    cat_barber_name: "理容師", cat_barber_desc: "カット、フェード、ヒゲ、ラインアップ、キッズカット。",
+    cat_lede: "RezTheLookは予約制で働くプロフェッショナルのために設計・構築されました——パーソナルケアから始まり、さらに展開予定。",
+    cat_barber_name: "理容師", cat_barber_desc: "カット、フェード、ヒゲ、シェイプアップ、キッズカット。",
     cat_stylist_name: "美容師", cat_stylist_desc: "カラー、ハイライト、ブロー、アップスタイル、エクステ。",
     cat_nails_name: "ネイリスト", cat_nails_desc: "マニキュア、ペディキュア、ジェル、アクリル、ネイルアート。",
     cat_spa_name: "スパ・ウェルネス", cat_spa_desc: "マッサージ、フェイシャル、ボディ、脱毛、ホットストーン。",
     cat_makeup_name: "メイクアップ", cat_makeup_desc: "ブライダル、イベント、撮影、レッスン。",
     cat_lash_name: "まつ毛と眉", cat_lash_desc: "エクステ、リフト、ティント、ラミネーション、スレッディング。",
+    cat_tattoo_name: "タトゥー", cat_tattoo_desc: "カスタムデザイン、レタリング、カバーアップ、タッチアップ、フラッシュ。",
+    cat_hairremoval_name: "脱毛", cat_hairremoval_desc: "ワックス、シュガーリング、糸脱毛、レーザー、電気脱毛。",
+    cat_braids_name: "ブレイズ＆ロック", cat_braids_desc: "ボックスブレイズ、ノットレス、ロック、ツイスト、コーンロウ。",
+    cat_coming_soon: "近日公開",
     why_pros_eyebrow: "プロの皆様へ",
     why_pros_title: "<em>あなたのビジネス</em>のために作られている。",
     why_pros_1_t: "月額 $19.99 + 税", why_pros_1_d: "予測可能な料金。階層プランなし、隠れたアップグレードなし、予約ごとの手数料なし。",
@@ -914,7 +991,7 @@ const T = {
     why_clients_1_t: "直接予約", why_clients_1_d: "プロと直接予約。中間層なし。チェックアウトで追加料金なし。",
     why_clients_2_t: "11言語対応", why_clients_2_d: "英語、スペイン語、ポルトガル語(ブラジル)、ポルトガル語(ポルトガル)、フランス語、イタリア語、中国語、日本語、韓国語、ロシア語、ポーランド語。",
     why_clients_3_t: "本物のプロ", why_clients_3_d: "自分の予約を運営する人々。彼らと予約した人からの本物のレビュー。",
-    why_clients_4_t: "すべての美、ひとつのアプリ", why_clients_4_d: "理容師、美容師、ネイリスト、スパ・ウェルネスのプロ、メイクアーティスト、まつ毛・眉スペシャリスト——すべて一箇所で。",
+    why_clients_4_t: "すべての予約、ひとつのアプリ", why_clients_4_d: "理容師、美容師、ネイリスト、スパ・ウェルネスのプロ、メイクアーティスト、まつ毛・眉スペシャリスト——すべて一箇所で。",
     launch_eyebrow: "近日公開",
     launch_title: "もうすぐ<em>予約受付開始</em>。",
     launch_lede: "RezTheLookは最終段階に入っています。App StoreとGoogle Playへの申請が近づいています。このページをご覧ください——公開後すぐにダウンロードリンクをここに掲載します。",
@@ -928,22 +1005,26 @@ const T = {
     nav_categories: "카테고리", nav_why: "왜 우리인가", nav_get: "앱 받기",
     hero_pros_eyebrow: "뷰티 전문가를 위해",
     hero_pros_headline: "당신의 솜씨.<br>당신의 가격.<br>당신의 <em>고객</em>.",
-    hero_pros_sub: "월 $19.99 + 세금. 수수료 0%. 바버, 스타일리스트, 네일 아티스트, 스파 전문가, 메이크업 아티스트, 속눈썹 및 눈썹 전문가를 위해 디자인하고 만들었습니다.",
+    hero_pros_sub: "월 $19.99 + 세금. 수수료 0%. 퍼스널 케어 전문가를 위해 디자인하고 만들었습니다.",
     hero_pros_cta: "전문가로 가입", hero_pros_link: "왜 전문가들이 옮길까 →",
     hero_clients_eyebrow: "고객을 위해",
     hero_clients_headline: "당신의 전문가를 찾으세요.<br><em>당신의 언어</em>로 예약하세요.",
     hero_clients_sub: "어떤 뷰티 전문가에게든 직접 예약하세요. 서비스 수수료 없음, 추가 요금 없음. 11개 언어 지원.",
     hero_clients_cta: "전문가 찾기", hero_clients_link: "카테고리 보기 →",
     ribbon_label: "하나의 단어. 열한 개 언어.",
-    cat_eyebrow: "여섯 개의 세계, 하나의 마켓플레이스",
+    cat_eyebrow: "아홉 개의 세계, 하나의 마켓플레이스",
     cat_title: "당신이 무엇을 하든, <em>당신이 속한 곳</em>입니다.",
-    cat_lede: "RezTheLook은 예약제로 일하는 전문가들을 위해 디자인하고 만들어졌습니다 — 뷰티부터 시작해, 더 많은 것이 곧 옵니다.",
-    cat_barber_name: "바버", cat_barber_desc: "커트, 페이드, 수염 손질, 라인업, 키즈 컷.",
+    cat_lede: "RezTheLook은 예약제로 일하는 전문가들을 위해 디자인하고 만들어졌습니다 — 퍼스널 케어부터 시작해, 더 많은 것이 곧 옵니다.",
+    cat_barber_name: "바버", cat_barber_desc: "커트, 페이드, 수염 손질, 셰이프업, 키즈 컷.",
     cat_stylist_name: "스타일리스트", cat_stylist_desc: "컬러, 하이라이트, 블로우 드라이, 업스타일, 익스텐션.",
     cat_nails_name: "네일 아티스트", cat_nails_desc: "매니큐어, 페디큐어, 젤, 아크릴, 네일 아트.",
     cat_spa_name: "스파 및 웰니스", cat_spa_desc: "마사지, 페이셜, 바디, 왁싱, 핫스톤.",
     cat_makeup_name: "메이크업 아티스트", cat_makeup_desc: "웨딩, 특별 이벤트, 촬영, 레슨.",
     cat_lash_name: "속눈썹과 눈썹", cat_lash_desc: "익스텐션, 리프트, 틴트, 라미네이션, 스레딩.",
+    cat_tattoo_name: "타투", cat_tattoo_desc: "맞춤 디자인, 레터링, 커버업, 터치업, 플래시.",
+    cat_hairremoval_name: "제모", cat_hairremoval_desc: "왁싱, 슈가링, 실 제모, 레이저, 전기 분해.",
+    cat_braids_name: "브레이드 & 락", cat_braids_desc: "박스 브레이드, 매듭 없는, 락, 트위스트, 콘로우.",
+    cat_coming_soon: "곧 출시",
     why_pros_eyebrow: "전문가를 위해",
     why_pros_title: "<em>당신의 사업</em>을 중심으로 만들어졌습니다.",
     why_pros_1_t: "월 $19.99 + 세금", why_pros_1_d: "예측 가능한 가격. 등급별 플랜 없음, 숨겨진 업그레이드 없음, 예약당 수수료 없음.",
@@ -956,7 +1037,7 @@ const T = {
     why_clients_1_t: "직접 예약", why_clients_1_d: "중간 계층 없이 전문가와 직접 예약. 결제 시 추가 수수료 없음.",
     why_clients_2_t: "11개 언어", why_clients_2_d: "영어, 스페인어, 포르투갈어(브라질), 포르투갈어(포르투갈), 프랑스어, 이탈리아어, 중국어, 일본어, 한국어, 러시아어, 폴란드어.",
     why_clients_3_t: "진짜 전문가", why_clients_3_d: "자신의 예약을 운영하는 사람들. 그들과 예약한 사람들의 실제 리뷰.",
-    why_clients_4_t: "모든 뷰티, 하나의 앱", why_clients_4_d: "바버, 스타일리스트, 네일 아티스트, 스파 및 웰니스 전문가, 메이크업 아티스트, 속눈썹 및 눈썹 전문가 — 모두 한 곳에서.",
+    why_clients_4_t: "모든 예약, 하나의 앱", why_clients_4_d: "바버, 스타일리스트, 네일 아티스트, 스파 및 웰니스 전문가, 메이크업 아티스트, 속눈썹 및 눈썹 전문가 — 모두 한 곳에서.",
     launch_eyebrow: "곧 출시",
     launch_title: "곧 <em>예약 접수 시작</em>합니다.",
     launch_lede: "RezTheLook은 마지막 단계에 있습니다. App Store와 Google Play 제출이 다가오고 있습니다. 이 페이지를 지켜봐 주세요 — 라이브 즉시 다운로드 링크가 여기 있을 것입니다.",
@@ -970,22 +1051,26 @@ const T = {
     nav_categories: "Категории", nav_why: "Почему мы", nav_get: "Скачать",
     hero_pros_eyebrow: "Для мастеров красоты",
     hero_pros_headline: "Ваше мастерство.<br>Ваши цены.<br>Ваши <em>клиенты</em>.",
-    hero_pros_sub: "$19,99 в месяц + налог. Ноль комиссии. Спроектировано и создано для барберов, стилистов, мастеров маникюра, спа-специалистов, визажистов и мастеров по ресницам и бровям.",
+    hero_pros_sub: "$19,99 в месяц + налог. Ноль комиссии. Спроектировано и создано для специалистов по персональному уходу.",
     hero_pros_cta: "Стать мастером", hero_pros_link: "Почему мастера переходят →",
     hero_clients_eyebrow: "Для клиентов",
     hero_clients_headline: "Найдите своего мастера.<br>Бронируйте на <em>своём языке</em>.",
     hero_clients_sub: "Бронируйте у любого мастера красоты напрямую. Без комиссий и наценок. 11 языков.",
     hero_clients_cta: "Найти мастера", hero_clients_link: "Все категории →",
     ribbon_label: "Одно слово. Одиннадцать языков.",
-    cat_eyebrow: "Шесть миров, один маркетплейс",
+    cat_eyebrow: "Девять миров, один маркетплейс",
     cat_title: "Чем бы вы ни занимались, <em>ваше место здесь</em>.",
-    cat_lede: "RezTheLook спроектирован и создан для профессионалов, работающих по записи — начиная с индустрии красоты, и впереди ещё больше.",
+    cat_lede: "RezTheLook спроектирован и создан для профессионалов, работающих по записи — начиная с персонального ухода, и впереди ещё больше.",
     cat_barber_name: "Барберы", cat_barber_desc: "Стрижки, фейды, борода, контуры, детские стрижки.",
     cat_stylist_name: "Стилисты", cat_stylist_desc: "Окрашивание, мелирование, укладки, причёски, наращивание.",
     cat_nails_name: "Мастера ногтей", cat_nails_desc: "Маникюр, педикюр, гель, акрил, нейл-арт.",
     cat_spa_name: "Спа и Wellness", cat_spa_desc: "Массаж, лицо, тело, депиляция, горячие камни.",
     cat_makeup_name: "Визажисты", cat_makeup_desc: "Свадебный, события, съёмки, уроки.",
     cat_lash_name: "Ресницы и Брови", cat_lash_desc: "Наращивание, ламинирование, окрашивание, дизайн.",
+    cat_tattoo_name: "Тату", cat_tattoo_desc: "Индивидуальные дизайны, надписи, перекрытия, ретушь, флэш.",
+    cat_hairremoval_name: "Удаление волос", cat_hairremoval_desc: "Воск, шугаринг, нить, лазер, электролиз.",
+    cat_braids_name: "Косички и Локи", cat_braids_desc: "Box braids, бесузловые, локи, твисты, корнроу.",
+    cat_coming_soon: "Скоро",
     why_pros_eyebrow: "Для мастеров",
     why_pros_title: "Построено вокруг <em>вашего бизнеса</em>, а не нашего.",
     why_pros_1_t: "$19,99 в месяц + налог", why_pros_1_d: "Предсказуемая цена. Без уровней, без скрытых апгрейдов, без комиссий за бронирование.",
@@ -998,7 +1083,7 @@ const T = {
     why_clients_1_t: "Прямое бронирование", why_clients_1_d: "Вы бронируете с мастером, без посредников. Никаких комиссий при оплате.",
     why_clients_2_t: "Одиннадцать языков", why_clients_2_d: "Английский, испанский, португальский (Бразилия), португальский (Португалия), французский, итальянский, китайский, японский, корейский, русский, польский.",
     why_clients_3_t: "Настоящие мастера", why_clients_3_d: "Люди, управляющие своими записями. Настоящие отзывы от тех, кто к ним записывался.",
-    why_clients_4_t: "Вся красота в одном приложении", why_clients_4_d: "Барбер, стилист, мастер маникюра, спа-специалист, визажист и мастер ресниц и бровей — всё в одном месте.",
+    why_clients_4_t: "Все записи в одном приложении", why_clients_4_d: "Барбер, стилист, мастер маникюра, спа-специалист, визажист и мастер ресниц и бровей — всё в одном месте.",
     launch_eyebrow: "Скоро запуск",
     launch_title: "Почти готовы <em>начать принимать записи</em>.",
     launch_lede: "RezTheLook на финишной прямой. Заявки в App Store и Google Play на подходе. Следите за этой страницей — ссылки на скачивание появятся здесь сразу после запуска.",
@@ -1012,22 +1097,26 @@ const T = {
     nav_categories: "Kategorie", nav_why: "Dlaczego my", nav_get: "Pobierz app",
     hero_pros_eyebrow: "Dla specjalistów beauty",
     hero_pros_headline: "Twoje rzemiosło.<br>Twoje ceny.<br>Twoi <em>klienci</em>.",
-    hero_pros_sub: "$19,99 miesięcznie + podatek. Zero prowizji. Zaprojektowane i stworzone dla fryzjerów, stylistek, manikiurzystek, specjalistów spa, makijażystek oraz specjalistów od rzęs i brwi.",
+    hero_pros_sub: "$19,99 miesięcznie + podatek. Zero prowizji. Zaprojektowane i stworzone dla profesjonalistów pielęgnacji osobistej.",
     hero_pros_cta: "Dołącz jako pro", hero_pros_link: "Dlaczego pro się przenoszą →",
     hero_clients_eyebrow: "Dla klientów",
     hero_clients_headline: "Znajdź swojego specjalistę.<br>Rezerwuj w <em>swoim języku</em>.",
     hero_clients_sub: "Rezerwuj bezpośrednio u dowolnego specjalisty beauty. Bez prowizji, bez narzutów. Dostępne w 11 językach.",
     hero_clients_cta: "Znajdź specjalistę", hero_clients_link: "Przeglądaj kategorie →",
     ribbon_label: "Jedno słowo. Jedenaście języków.",
-    cat_eyebrow: "Sześć światów, jeden marketplace",
+    cat_eyebrow: "Dziewięć światów, jeden marketplace",
     cat_title: "Czymkolwiek się zajmujesz, <em>tu jest twoje miejsce</em>.",
-    cat_lede: "RezTheLook jest zaprojektowany i stworzony dla profesjonalistów pracujących na umówione wizyty — zaczynając od branży beauty, i jeszcze więcej nadchodzi.",
+    cat_lede: "RezTheLook jest zaprojektowany i stworzony dla profesjonalistów pracujących na umówione wizyty — zaczynając od pielęgnacji osobistej, i jeszcze więcej nadchodzi.",
     cat_barber_name: "Barberzy", cat_barber_desc: "Strzyżenie, fade, broda, konturowanie, fryzury dziecięce.",
     cat_stylist_name: "Stylistki", cat_stylist_desc: "Koloryzacja, pasemka, modelowanie, upięcia, doczepy.",
     cat_nails_name: "Manikiurzystki", cat_nails_desc: "Manicure, pedicure, hybrydy, akryl, zdobienia.",
     cat_spa_name: "Spa i Wellness", cat_spa_desc: "Masaże, twarz, ciało, depilacja, gorące kamienie.",
     cat_makeup_name: "Makijażystki", cat_makeup_desc: "Ślubny, wydarzenia, sesje, lekcje.",
     cat_lash_name: "Rzęsy i Brwi", cat_lash_desc: "Przedłużanie, lifting, henna, laminacja, regulacja.",
+    cat_tattoo_name: "Tatuaże", cat_tattoo_desc: "Niestandardowe projekty, napisy, zakrywanie, poprawki, flash.",
+    cat_hairremoval_name: "Depilacja", cat_hairremoval_desc: "Wosk, cukrowa, nici, laser, elektroliza.",
+    cat_braids_name: "Warkocze i Locsy", cat_braids_desc: "Box braids, bez węzłów, locsy, twisty, cornrows.",
+    cat_coming_soon: "Wkrótce",
     why_pros_eyebrow: "Dla specjalistów",
     why_pros_title: "Zbudowane wokół <em>twojego biznesu</em>, nie naszego.",
     why_pros_1_t: "$19,99 miesięcznie + podatek", why_pros_1_d: "Przewidywalna cena. Bez planów warstwowych, bez ukrytych upgrade'ów, bez opłat od rezerwacji.",
@@ -1040,7 +1129,7 @@ const T = {
     why_clients_1_t: "Bezpośrednia rezerwacja", why_clients_1_d: "Rezerwujesz ze specjalistą, bez pośredników. Bez opłat dodanych przy zapłacie.",
     why_clients_2_t: "Jedenaście języków", why_clients_2_d: "Angielski, hiszpański, portugalski (Brazylia), portugalski (Portugalia), francuski, włoski, chiński, japoński, koreański, rosyjski, polski.",
     why_clients_3_t: "Prawdziwi specjaliści", why_clients_3_d: "Ludzie, prowadzący własne rezerwacje. Prawdziwe opinie od tych, którzy u nich rezerwowali.",
-    why_clients_4_t: "Cała branża beauty, jedna aplikacja", why_clients_4_d: "Barber, stylistka, manikiurzystka, specjalistka spa i wellness, makijażystka, specjalistka od rzęs i brwi — wszystko w jednym miejscu.",
+    why_clients_4_t: "Wszystkie rezerwacje, jedna aplikacja", why_clients_4_d: "Barber, stylistka, manikiurzystka, specjalistka spa i wellness, makijażystka, specjalistka od rzęs i brwi — wszystko w jednym miejscu.",
     launch_eyebrow: "Wkrótce dostępne",
     launch_title: "Prawie gotowi, by <em>zacząć przyjmować rezerwacje</em>.",
     launch_lede: "RezTheLook jest na ostatniej prostej. Zgłoszenia do App Store i Google Play są w drodze. Zaglądaj tutaj — linki do pobrania pojawią się tu zaraz po starcie.",
