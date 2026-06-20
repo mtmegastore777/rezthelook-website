@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>Reset password · RezTheLook</title>
+  <meta name="theme-color" content="#0D1B3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root{
+      --navy:#0D1B3E;
+      --navy-deep:#08122B;
+      --gold:#D4AF37;
+      --gold-soft:#E5C76B;
+      --cream:#F8F6F1;
+      --ink:#1A2238;
+      --muted:#6B7280;
+      --line:#E5E2DA;
+      --error:#B91C1C;
+      --error-bg:#FEF2F2;
+      --success:#047857;
+      --success-bg:#ECFDF5;
+      --radius:14px;
+      --radius-sm:10px;
+      --shadow:0 30px 80px -20px rgba(8,18,43,.55),0 8px 20px -8px rgba(8,18,43,.35);
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--navy);color:var(--cream);font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+    body{
+      min-height:100svh;
+      background:
+        radial-gradient(1200px 600px at 50% -10%,rgba(212,175,55,.10),transparent 60%),
+        radial-gradient(900px 500px at 100% 110%,rgba(212,175,55,.06),transparent 60%),
+        linear-gradient(180deg,var(--navy-deep) 0%,var(--navy) 60%);
+      display:flex;flex-direction:column;
+    }
+    .shell{flex:1;display:flex;flex-direction:column;align-items:center;padding:32px 20px 24px}
+
+    /* Wordmark */
+    .wordmark{
+      font-family:'Lora',Georgia,serif;font-weight:700;letter-spacing:.02em;
+      font-size:22px;color:var(--cream);
+      text-decoration:none;display:inline-flex;align-items:baseline;gap:2px;
+    }
+    .wordmark .dot{color:var(--gold);opacity:.85;padding:0 4px}
+    .wordmark .the{color:var(--gold)}
+
+    /* Card */
+    .card{
+      width:100%;max-width:440px;margin:36px 0 auto;
+      background:var(--cream);color:var(--ink);
+      border-radius:var(--radius);box-shadow:var(--shadow);
+      padding:32px 28px 28px;
+      position:relative;overflow:hidden;
+    }
+    .card::before{
+      content:"";position:absolute;left:0;right:0;top:0;height:3px;
+      background:linear-gradient(90deg,var(--gold) 0%,var(--gold-soft) 50%,var(--gold) 100%);
+    }
+    h1{
+      font-family:'Lora',Georgia,serif;font-weight:700;
+      font-size:26px;line-height:1.2;margin:4px 0 8px;color:var(--ink);
+      letter-spacing:-.01em;
+    }
+    .lede{font-size:14.5px;line-height:1.5;color:var(--muted);margin:0 0 22px}
+
+    /* App CTA (mobile only) */
+    .app-cta{display:none}
+    .app-cta.show{display:block}
+    .app-button{
+      display:flex;align-items:center;justify-content:center;gap:10px;
+      width:100%;padding:14px 16px;
+      background:var(--navy);color:var(--cream);
+      border:none;border-radius:var(--radius-sm);
+      font-family:inherit;font-size:15px;font-weight:600;letter-spacing:.01em;
+      cursor:pointer;text-decoration:none;
+      transition:transform .15s ease,background .15s ease;
+    }
+    .app-button:hover{background:#11214A}
+    .app-button:active{transform:translateY(1px)}
+    .app-button .arrow{transition:transform .15s ease}
+    .app-button:hover .arrow{transform:translateX(2px)}
+    .divider{display:flex;align-items:center;gap:12px;margin:18px 0 8px;color:var(--muted);font-size:12px;letter-spacing:.12em;text-transform:uppercase}
+    .divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line)}
+
+    /* Form */
+    form{display:flex;flex-direction:column;gap:14px;margin-top:6px}
+    label{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:6px;display:block}
+    .field{position:relative}
+    .input{
+      width:100%;padding:13px 44px 13px 14px;
+      border:1.5px solid var(--line);border-radius:var(--radius-sm);
+      background:#fff;color:var(--ink);
+      font-family:inherit;font-size:15px;
+      transition:border-color .15s ease,box-shadow .15s ease;
+    }
+    .input::placeholder{color:#A0A4AE}
+    .input:focus{outline:none;border-color:var(--navy);box-shadow:0 0 0 4px rgba(13,27,62,.08)}
+    .input.error{border-color:var(--error);box-shadow:0 0 0 4px rgba(185,28,28,.06)}
+    .toggle{
+      position:absolute;right:6px;top:50%;transform:translateY(-50%);
+      background:none;border:none;cursor:pointer;padding:8px;border-radius:8px;
+      color:var(--muted);display:inline-flex;align-items:center;
+    }
+    .toggle:hover{color:var(--ink);background:rgba(13,27,62,.05)}
+    .toggle:focus-visible{outline:2px solid var(--navy);outline-offset:1px}
+
+    .meter{display:flex;gap:4px;margin-top:8px}
+    .meter span{flex:1;height:4px;border-radius:2px;background:var(--line);transition:background .2s ease}
+    .meter[data-score="1"] span:nth-child(-n+1){background:#DC2626}
+    .meter[data-score="2"] span:nth-child(-n+2){background:#F59E0B}
+    .meter[data-score="3"] span:nth-child(-n+3){background:#84CC16}
+    .meter[data-score="4"] span:nth-child(-n+4){background:#10B981}
+    .hint{font-size:12.5px;color:var(--muted);margin-top:6px}
+    .hint.err{color:var(--error)}
+
+    .submit{
+      margin-top:4px;
+      display:flex;align-items:center;justify-content:center;gap:10px;
+      width:100%;padding:14px 16px;
+      background:var(--gold);color:var(--navy);
+      border:none;border-radius:var(--radius-sm);
+      font-family:inherit;font-size:15.5px;font-weight:600;letter-spacing:.01em;
+      cursor:pointer;
+      transition:transform .15s ease,background .15s ease,box-shadow .15s ease;
+      box-shadow:0 8px 18px -8px rgba(212,175,55,.55);
+    }
+    .submit:hover{background:#C9A431}
+    .submit:active{transform:translateY(1px)}
+    .submit:disabled{background:#E2D597;color:#5B4A0A;cursor:not-allowed;box-shadow:none}
+    .spinner{
+      width:16px;height:16px;border-radius:50%;
+      border:2px solid rgba(13,27,62,.25);border-top-color:var(--navy);
+      animation:spin .7s linear infinite;display:none;
+    }
+    .submit.loading .spinner{display:inline-block}
+    .submit.loading .label{opacity:.6}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* Status banners */
+    .banner{
+      display:none;
+      padding:12px 14px;border-radius:var(--radius-sm);
+      font-size:14px;line-height:1.45;margin-bottom:18px;
+      border:1px solid transparent;
+    }
+    .banner.show{display:block}
+    .banner.error{background:var(--error-bg);color:var(--error);border-color:#FECACA}
+    .banner.success{background:var(--success-bg);color:var(--success);border-color:#A7F3D0}
+
+    /* Success state */
+    .success-state{display:none;text-align:center;padding:8px 4px 4px}
+    .success-state.show{display:block}
+    .check{
+      width:64px;height:64px;border-radius:50%;
+      background:var(--success-bg);color:var(--success);
+      display:inline-flex;align-items:center;justify-content:center;
+      margin-bottom:14px;
+    }
+    .success-state h2{
+      font-family:'Lora',Georgia,serif;font-weight:700;
+      font-size:22px;margin:0 0 8px;color:var(--ink);
+    }
+    .success-state p{color:var(--muted);font-size:14.5px;line-height:1.5;margin:0 0 22px}
+
+    /* Hide-during-success */
+    .hide-on-success{display:block}
+    body.success .hide-on-success{display:none}
+
+    /* Invalid token state */
+    .invalid-state{display:none;text-align:center;padding:8px 4px 4px}
+    .invalid-state.show{display:block}
+    .invalid-state .icon{
+      width:64px;height:64px;border-radius:50%;
+      background:var(--error-bg);color:var(--error);
+      display:inline-flex;align-items:center;justify-content:center;
+      margin-bottom:14px;
+    }
+    .invalid-state h2{
+      font-family:'Lora',Georgia,serif;font-weight:700;
+      font-size:22px;margin:0 0 8px;color:var(--ink);
+    }
+    .invalid-state p{color:var(--muted);font-size:14.5px;line-height:1.5;margin:0 0 18px}
+
+    /* Footer */
+    footer{
+      text-align:center;color:rgba(248,246,241,.55);font-size:12px;
+      padding:24px 16px 16px;letter-spacing:.02em;
+    }
+    footer a{color:rgba(248,246,241,.75);text-decoration:none;border-bottom:1px solid rgba(248,246,241,.25)}
+    footer a:hover{color:var(--cream);border-bottom-color:var(--cream)}
+
+    /* Accessibility */
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+    @media (prefers-reduced-motion: reduce){
+      *{animation:none!important;transition:none!important}
+    }
+
+    @media (max-width:420px){
+      .shell{padding:24px 16px 20px}
+      .card{padding:26px 20px 24px;border-radius:12px;margin-top:24px}
+      h1{font-size:23px}
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <a class="wordmark" href="/" aria-label="RezTheLook home">
+      Rez<span class="the">The</span>Look
+    </a>
+
+    <main class="card" role="main">
+
+      <!-- INITIAL FORM STATE -->
+      <div id="form-state" class="hide-on-success">
+
+        <div id="banner" class="banner" role="alert" aria-live="polite"></div>
+
+        <div class="app-cta" id="app-cta">
+          <a href="#" id="open-app" class="app-button">
+            <span>Open in RezTheLook app</span>
+            <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+          </a>
+          <div class="divider"><span>or continue here</span></div>
+        </div>
+
+        <h1>Reset your password</h1>
+        <p class="lede">Choose a new password for your RezTheLook account. You'll use it the next time you sign in.</p>
+
+        <form id="reset-form" novalidate>
+          <div>
+            <label for="pw1">New password</label>
+            <div class="field">
+              <input
+                id="pw1" name="password" class="input" type="password"
+                placeholder="At least 8 characters"
+                autocomplete="new-password" required minlength="8" />
+              <button type="button" class="toggle" data-target="pw1" aria-label="Show password">
+                <svg class="eye" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+            <div class="meter" id="meter" data-score="0" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+            <div class="hint" id="hint1">Use 8+ characters. A mix of letters, numbers, and a symbol makes it stronger.</div>
+          </div>
+
+          <div>
+            <label for="pw2">Confirm password</label>
+            <div class="field">
+              <input
+                id="pw2" name="confirm" class="input" type="password"
+                placeholder="Re-enter password"
+                autocomplete="new-password" required minlength="8" />
+              <button type="button" class="toggle" data-target="pw2" aria-label="Show password">
+                <svg class="eye" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+            <div class="hint" id="hint2"></div>
+          </div>
+
+          <button type="submit" class="submit" id="submit-btn">
+            <span class="spinner" aria-hidden="true"></span>
+            <span class="label">Update password</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- SUCCESS STATE -->
+      <div id="success-state" class="success-state">
+        <div class="check" aria-hidden="true">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <h2>Password updated</h2>
+        <p>You can now sign in to the RezTheLook app with your new password.</p>
+        <a href="#" id="open-app-success" class="app-button" style="display:none">
+          <span>Open the RezTheLook app</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+        </a>
+      </div>
+
+      <!-- INVALID/EXPIRED LINK STATE -->
+      <div id="invalid-state" class="invalid-state">
+        <div class="icon" aria-hidden="true">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="13"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <h2 id="invalid-title">This link has expired</h2>
+        <p id="invalid-body">Password reset links are valid for one hour. Open the RezTheLook app and tap <strong>Forgot password?</strong> to request a new one.</p>
+      </div>
+
+    </main>
+
+    <footer>
+      © 2026 RezTheLook · <a href="/">rezthelook.com</a>
+    </footer>
+  </div>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+    /* ============================================================
+       CONFIG — Miguel: replace SUPABASE_ANON_KEY with the value
+       from Supabase Dashboard → Project Settings → API → "anon public"
+       The URL is already correct for your project.
+       ============================================================ */
+    const SUPABASE_URL = 'https://xwykrxbymkghdgzudsqi.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh3eWtyeGJ5bWtnaGRnenVkc3FpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxODczNTEsImV4cCI6MjA5Mzc2MzM1MX0.rSBm94EJnvqr1pBGiiBq6F3kbR1VO5sSrvDqfiMR_HE';
+    const APP_SCHEME = 'rezthelook://reset-password';
+    /* ============================================================ */
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
+    });
+
+    // ------- Elements -------
+    const $ = (id) => document.getElementById(id);
+    const formState = $('form-state');
+    const successState = $('success-state');
+    const invalidState = $('invalid-state');
+    const banner = $('banner');
+    const form = $('reset-form');
+    const pw1 = $('pw1');
+    const pw2 = $('pw2');
+    const submitBtn = $('submit-btn');
+    const meter = $('meter');
+    const hint2 = $('hint2');
+    const appCta = $('app-cta');
+    const openAppLink = $('open-app');
+    const openAppSuccess = $('open-app-success');
+
+    // ------- Token parsing -------
+    // Supabase puts recovery tokens in the URL hash:
+    //   #access_token=...&refresh_token=...&type=recovery&expires_in=...
+    // Sometimes errors instead:
+    //   #error=access_denied&error_code=otp_expired&error_description=...
+    function parseHash() {
+      const h = window.location.hash.replace(/^#/, '');
+      const params = new URLSearchParams(h);
+      const obj = {};
+      for (const [k, v] of params.entries()) obj[k] = v;
+      return obj;
+    }
+    const hash = parseHash();
+
+    // ------- Mobile detection -------
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    const deepLink = APP_SCHEME + '#' + window.location.hash.replace(/^#/, '');
+
+    if (isMobile) {
+      appCta.classList.add('show');
+      openAppLink.setAttribute('href', deepLink);
+      openAppSuccess.setAttribute('href', deepLink);
+      openAppSuccess.style.display = 'flex';
+    }
+
+    // ------- Error pre-check (expired/invalid link) -------
+    if (hash.error || hash.error_code) {
+      showInvalid(hash.error_code, hash.error_description);
+    } else if (!hash.access_token || hash.type !== 'recovery') {
+      // No recovery token at all = arrived here without a valid link
+      showInvalid('no_token');
+    } else {
+      // Set the session so we can call updateUser
+      supabase.auth.setSession({
+        access_token: hash.access_token,
+        refresh_token: hash.refresh_token || ''
+      }).catch(() => showInvalid('session_failed'));
+    }
+
+    function showInvalid(code, description) {
+      formState.style.display = 'none';
+      invalidState.classList.add('show');
+      const title = $('invalid-title');
+      const body  = $('invalid-body');
+      if (code === 'no_token') {
+        title.textContent = 'This link isn\u2019t valid';
+        body.innerHTML = 'Open the RezTheLook app and tap <strong>Forgot password?</strong> to request a fresh reset link.';
+      } else if (code === 'otp_expired') {
+        title.textContent = 'This link has expired';
+        body.innerHTML = 'Password reset links are valid for one hour. Open the RezTheLook app and tap <strong>Forgot password?</strong> to request a new one.';
+      } else {
+        title.textContent = 'We couldn\u2019t verify this link';
+        body.innerHTML = (description ? description.replace(/\+/g, ' ') + '. ' : '') +
+                        'Open the RezTheLook app and tap <strong>Forgot password?</strong> to request a new one.';
+      }
+    }
+
+    // ------- Show / hide password -------
+    document.querySelectorAll('.toggle').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = $(btn.dataset.target);
+        const showing = target.type === 'text';
+        target.type = showing ? 'password' : 'text';
+        btn.setAttribute('aria-label', showing ? 'Show password' : 'Hide password');
+      });
+    });
+
+    // ------- Strength meter -------
+    function scorePassword(p) {
+      if (!p) return 0;
+      let s = 0;
+      if (p.length >= 8) s++;
+      if (p.length >= 12) s++;
+      if (/[A-Z]/.test(p) && /[a-z]/.test(p)) s++;
+      if (/\d/.test(p) && /[^A-Za-z0-9]/.test(p)) s++;
+      return Math.min(s, 4);
+    }
+    pw1.addEventListener('input', () => {
+      meter.dataset.score = scorePassword(pw1.value);
+      pw1.classList.remove('error');
+      checkMatch();
+    });
+    pw2.addEventListener('input', () => {
+      pw2.classList.remove('error');
+      checkMatch();
+    });
+    function checkMatch() {
+      if (pw2.value && pw2.value !== pw1.value) {
+        hint2.textContent = 'Passwords don\u2019t match.';
+        hint2.classList.add('err');
+      } else {
+        hint2.textContent = '';
+        hint2.classList.remove('err');
+      }
+    }
+
+    // ------- Submit -------
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hideBanner();
+
+      const p1 = pw1.value;
+      const p2 = pw2.value;
+
+      if (p1.length < 8) {
+        pw1.classList.add('error');
+        pw1.focus();
+        showBanner('error', 'Password must be at least 8 characters.');
+        return;
+      }
+      if (p1 !== p2) {
+        pw2.classList.add('error');
+        pw2.focus();
+        showBanner('error', 'Passwords don\u2019t match. Please re-enter.');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.classList.add('loading');
+
+      const { error } = await supabase.auth.updateUser({ password: p1 });
+
+      if (error) {
+        submitBtn.disabled = false;
+        submitBtn.classList.remove('loading');
+        if (/expired|session/i.test(error.message)) {
+          showInvalid('otp_expired');
+        } else {
+          showBanner('error', error.message || 'Couldn\u2019t update password. Try again.');
+        }
+        return;
+      }
+
+      // Success — clear the session so the page doesn't hold auth state
+      await supabase.auth.signOut().catch(() => {});
+
+      document.body.classList.add('success');
+      successState.classList.add('show');
+      // Strip the hash so a refresh doesn't try to reuse the (now-consumed) token
+      history.replaceState(null, '', window.location.pathname);
+    });
+
+    function showBanner(kind, msg) {
+      banner.textContent = msg;
+      banner.className = 'banner show ' + kind;
+    }
+    function hideBanner() {
+      banner.className = 'banner';
+    }
+  </script>
+</body>
+</html>
