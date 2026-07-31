@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Email confirmed · RezTheLook</title>
+  <meta name="robots" content="noindex" />
+  <meta name="theme-color" content="#0D1B3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --navy: #0D1B3E;
+      --navy-lift: #142347;
+      --gold: #D4AF37;
+      --white: #FFFFFF;
+      --ink-soft: rgba(255, 255, 255, 0.74);
+      --ink-faint: rgba(255, 255, 255, 0.42);
+      --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --serif: "Lora", Georgia, "Times New Roman", serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body { height: 100%; }
+
+    body {
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 28px;
+      background:
+        radial-gradient(120% 90% at 50% 22%, rgba(212, 175, 55, 0.10) 0%, rgba(20, 35, 71, 0) 55%),
+        radial-gradient(140% 120% at 50% 0%, #14264d 0%, var(--navy) 60%);
+      color: var(--white);
+      font-family: var(--sans);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    main {
+      width: 100%;
+      max-width: 440px;
+      text-align: center;
+    }
+
+    .eyebrow {
+      font-family: var(--serif);
+      font-weight: 700;
+      font-size: 20px;
+      letter-spacing: -0.01em;
+      color: var(--white);
+      margin-bottom: 34px;
+      opacity: 0;
+      animation: rise 0.6s 0.05s ease forwards;
+    }
+    .eyebrow .the { color: var(--gold); }
+
+    /* Signature: the gold-bordered badge with a warm halo — echoes the app's login iconBox */
+    .badge {
+      width: 96px;
+      height: 96px;
+      margin: 0 auto 30px;
+      border-radius: 26px;
+      border: 2px solid var(--gold);
+      background: var(--navy-lift);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow:
+        0 0 0 6px rgba(212, 175, 55, 0.06),
+        0 18px 46px rgba(212, 175, 55, 0.22),
+        0 8px 22px rgba(0, 0, 0, 0.35);
+      opacity: 0;
+      transform: scale(0.82);
+      animation: pop 0.7s 0.12s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    .badge svg { width: 46px; height: 46px; display: block; }
+    .badge .check {
+      stroke: var(--gold);
+      stroke-width: 3.4;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+      stroke-dasharray: 40;
+      stroke-dashoffset: 40;
+      animation: draw 0.55s 0.5s ease forwards;
+    }
+
+    h1 {
+      font-family: var(--serif);
+      font-weight: 700;
+      font-size: 34px;
+      line-height: 1.15;
+      letter-spacing: -0.015em;
+      margin-bottom: 14px;
+      opacity: 0;
+      animation: rise 0.6s 0.24s ease forwards;
+    }
+
+    .lead {
+      font-size: 17px;
+      line-height: 1.55;
+      color: var(--ink-soft);
+      margin-bottom: 8px;
+      opacity: 0;
+      animation: rise 0.6s 0.32s ease forwards;
+    }
+
+    .action {
+      font-size: 16px;
+      line-height: 1.55;
+      color: var(--ink-soft);
+      margin-bottom: 30px;
+      opacity: 0;
+      animation: rise 0.6s 0.40s ease forwards;
+    }
+    .action strong { color: var(--white); font-weight: 600; }
+
+    .open {
+      display: inline-block;
+      font-size: 14.5px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      color: var(--gold);
+      text-decoration: none;
+      padding: 13px 30px;
+      border: 1.5px solid rgba(212, 175, 55, 0.6);
+      border-radius: 999px;
+      background: transparent;
+      transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+      opacity: 0;
+      animation: rise 0.6s 0.48s ease forwards;
+    }
+    .open:hover { background: var(--gold); color: var(--navy); border-color: var(--gold); }
+    .open:active { transform: translateY(1px); }
+    .open:focus-visible { outline: 3px solid rgba(212, 175, 55, 0.55); outline-offset: 3px; }
+
+    .foot {
+      margin-top: 26px;
+      font-size: 13px;
+      color: var(--ink-faint);
+      opacity: 0;
+      animation: rise 0.6s 0.56s ease forwards;
+    }
+
+    .tagline {
+      margin-top: 46px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--gold);
+      opacity: 0;
+      animation: fade 0.9s 0.7s ease forwards;
+    }
+
+    @keyframes pop {
+      to { opacity: 1; transform: scale(1); }
+    }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fade { to { opacity: 0.9; } }
+    @keyframes draw { to { stroke-dashoffset: 0; } }
+
+    @media (max-width: 380px) {
+      h1 { font-size: 29px; }
+      .lead { font-size: 16px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .eyebrow, .badge, h1, .lead, .action, .open, .foot, .tagline { animation: none; opacity: 1; transform: none; }
+      .badge .check { stroke-dashoffset: 0; }
+      .tagline { opacity: 0.9; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="eyebrow">Rez<span class="the">The</span>Look</div>
+
+    <div class="badge" aria-hidden="true">
+      <svg viewBox="0 0 46 46" role="img">
+        <path class="check" d="M12 24.5 L20 32 L34 15" />
+      </svg>
+    </div>
+
+    <h1>You're all set.</h1>
+    <p class="lead">Your email is confirmed and your RezTheLook account is ready.</p>
+    <p class="action">Open the <strong>RezTheLook</strong> app and log in to start booking.</p>
+
+    <a class="open" href="rezthelook://">Open RezTheLook</a>
+
+    <p class="foot">You can close this window.</p>
+    <div class="tagline">Your Next Look Starts Here</div>
+  </main>
+</body>
+</html>
