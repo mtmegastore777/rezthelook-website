@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Booking profile · RezTheLook</title>
+  <meta name="robots" content="noindex" />
+  <meta name="theme-color" content="#0D1B3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --navy: #0D1B3E;
+      --navy-lift: #142347;
+      --gold: #D4AF37;
+      --white: #FFFFFF;
+      --ink-soft: rgba(255, 255, 255, 0.74);
+      --ink-faint: rgba(255, 255, 255, 0.42);
+      --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --serif: "Lora", Georgia, "Times New Roman", serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body { height: 100%; }
+
+    body {
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 28px 22px;
+      background:
+        radial-gradient(120% 90% at 50% 22%, rgba(212, 175, 55, 0.10) 0%, rgba(20, 35, 71, 0) 55%),
+        radial-gradient(140% 120% at 50% 0%, #14264d 0%, var(--navy) 60%);
+      color: var(--white);
+      font-family: var(--sans);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    main {
+      width: 100%;
+      max-width: 440px;
+      text-align: center;
+    }
+
+    .eyebrow {
+      font-family: var(--serif);
+      font-weight: 700;
+      font-size: 20px;
+      letter-spacing: -0.01em;
+      margin-bottom: 30px;
+    }
+    .eyebrow .the { color: var(--gold); }
+
+    [hidden] { display: none !important; }
+
+    /* ---------- loading ---------- */
+    .spinner {
+      width: 34px;
+      height: 34px;
+      margin: 34px auto;
+      border-radius: 50%;
+      border: 3px solid rgba(212, 175, 55, 0.22);
+      border-top-color: var(--gold);
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ---------- avatar ---------- */
+    .avatar {
+      width: 124px;
+      height: 124px;
+      margin: 0 auto 22px;
+      border-radius: 50%;
+      border: 2px solid var(--gold);
+      background: var(--navy-lift);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow:
+        0 0 0 6px rgba(212, 175, 55, 0.06),
+        0 18px 46px rgba(212, 175, 55, 0.20),
+        0 8px 22px rgba(0, 0, 0, 0.35);
+    }
+    .avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .initials {
+      font-family: var(--serif);
+      font-weight: 700;
+      font-size: 42px;
+      color: var(--gold);
+      letter-spacing: 0.02em;
+      user-select: none;
+    }
+
+    h1 {
+      font-family: var(--serif);
+      font-weight: 700;
+      font-size: 32px;
+      line-height: 1.15;
+      letter-spacing: -0.015em;
+      margin-bottom: 8px;
+      overflow-wrap: anywhere;
+    }
+
+    .salon {
+      font-size: 16px;
+      color: var(--ink-soft);
+      margin-bottom: 14px;
+      overflow-wrap: anywhere;
+    }
+
+    .professions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      justify-content: center;
+      margin-bottom: 18px;
+    }
+    .chip {
+      font-size: 11.5px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--gold);
+      border: 1px solid rgba(212, 175, 55, 0.45);
+      border-radius: 999px;
+      padding: 6px 13px;
+      white-space: nowrap;
+    }
+
+    .bio {
+      font-size: 15.5px;
+      line-height: 1.6;
+      color: var(--ink-soft);
+      margin-bottom: 30px;
+      overflow-wrap: anywhere;
+    }
+
+    /* ---------- booking call to action ---------- */
+    .cta-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(212, 175, 55, 0.30);
+      border-radius: 20px;
+      padding: 24px 20px;
+      text-align: center;
+    }
+
+    .cta-title {
+      font-family: var(--serif);
+      font-weight: 700;
+      font-size: 19px;
+      line-height: 1.3;
+      margin-bottom: 10px;
+    }
+
+    .cta-body {
+      font-size: 14.5px;
+      line-height: 1.6;
+      color: var(--ink-soft);
+      margin-bottom: 18px;
+    }
+
+    .code-label {
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: 8px;
+    }
+
+    .code {
+      font-family: var(--serif);
+      font-weight: 700;
+      font-size: 22px;
+      color: var(--gold);
+      letter-spacing: 0.01em;
+      background: rgba(212, 175, 55, 0.09);
+      border: 1px dashed rgba(212, 175, 55, 0.5);
+      border-radius: 12px;
+      padding: 12px 16px;
+      overflow-wrap: anywhere;
+    }
+
+    .cta-foot {
+      font-size: 12.5px;
+      color: var(--ink-faint);
+      margin-top: 16px;
+      line-height: 1.55;
+    }
+
+    /* ---------- fallback states ---------- */
+    .badge {
+      width: 92px;
+      height: 92px;
+      margin: 8px auto 26px;
+      border-radius: 26px;
+      border: 2px solid var(--gold);
+      background: var(--navy-lift);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow:
+        0 0 0 6px rgba(212, 175, 55, 0.06),
+        0 18px 46px rgba(212, 175, 55, 0.18),
+        0 8px 22px rgba(0, 0, 0, 0.35);
+    }
+    .badge svg { width: 42px; height: 42px; display: block; }
+    .badge path, .badge circle, .badge line {
+      stroke: var(--gold);
+      stroke-width: 3.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+    }
+
+    .lead {
+      font-size: 16.5px;
+      line-height: 1.55;
+      color: var(--ink-soft);
+      margin-bottom: 26px;
+    }
+
+    .link-btn {
+      display: inline-block;
+      font-size: 14.5px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      color: var(--gold);
+      text-decoration: none;
+      padding: 13px 30px;
+      border: 1.5px solid rgba(212, 175, 55, 0.6);
+      border-radius: 999px;
+      background: transparent;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+    }
+    .link-btn:hover { background: var(--gold); color: var(--navy); border-color: var(--gold); }
+    .link-btn:active { transform: translateY(1px); }
+    .link-btn:focus-visible { outline: 3px solid rgba(212, 175, 55, 0.55); outline-offset: 3px; }
+
+    .tagline {
+      margin-top: 40px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--gold);
+      opacity: 0.9;
+    }
+
+    @media (max-width: 380px) {
+      h1 { font-size: 28px; }
+      .avatar { width: 108px; height: 108px; }
+      .initials { font-size: 37px; }
+      .code { font-size: 19px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .spinner { animation: none; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="eyebrow">Rez<span class="the">The</span>Look</div>
+
+    <!-- ---------- loading ---------- -->
+    <section id="loading-state" aria-live="polite" aria-busy="true">
+      <div class="spinner" role="status" aria-label="Loading booking profile"></div>
+    </section>
+
+    <!-- ---------- profile found ---------- -->
+    <section id="profile-state" hidden>
+      <div class="avatar" id="avatar"></div>
+      <h1 id="display-name"></h1>
+      <p class="salon" id="salon-name" hidden></p>
+      <div class="professions" id="professions"></div>
+      <p class="bio" id="bio" hidden></p>
+
+      <div class="cta-card">
+        <p class="cta-title">Book with me on the RezTheLook app</p>
+        <p class="cta-body">
+          The RezTheLook app is launching soon. When it lands, search this
+          booking code to find me and book directly.
+        </p>
+        <p class="code-label">My booking code</p>
+        <p class="code" id="booking-code"></p>
+        <p class="cta-foot">No commissions, no middleman &mdash; you book straight with me.</p>
+      </div>
+    </section>
+
+    <!-- ---------- not found ---------- -->
+    <section id="notfound-state" hidden>
+      <div class="badge" aria-hidden="true">
+        <svg viewBox="0 0 42 42" role="img">
+          <circle cx="21" cy="21" r="16" />
+          <line x1="15" y1="15" x2="27" y2="27" />
+        </svg>
+      </div>
+      <h1>This link isn&rsquo;t active</h1>
+      <p class="lead">
+        We couldn&rsquo;t find a booking page for this link. It may have changed,
+        or the professional may no longer be taking bookings here.
+      </p>
+      <a class="link-btn" href="https://rezthelook.com">Go to rezthelook.com</a>
+    </section>
+
+    <!-- ---------- request failed ---------- -->
+    <section id="error-state" hidden>
+      <div class="badge" aria-hidden="true">
+        <svg viewBox="0 0 42 42" role="img">
+          <circle cx="21" cy="21" r="16" />
+          <line x1="21" y1="13" x2="21" y2="23" />
+          <line x1="21" y1="28.5" x2="21" y2="28.6" />
+        </svg>
+      </div>
+      <h1>Something went wrong</h1>
+      <p class="lead">
+        We couldn&rsquo;t load this booking page just now. Check your connection
+        and try again.
+      </p>
+      <button class="link-btn" type="button" id="retry-btn">Try again</button>
+    </section>
+
+    <div class="tagline">Your Next Look Starts Here</div>
+  </main>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+    /* ============================================================
+       CONFIG — Miguel: replace BOTH values below with the ones
+       from Supabase Dashboard → Project Settings → API
+         SUPABASE_URL      → "Project URL"
+         SUPABASE_ANON_KEY → "anon public"
+       (The same pair already used by reset-password/index.html.)
+       ============================================================ */
+    const SUPABASE_URL = 'https://xwykrxbymkghdgzudsqi.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh3eWtyeGJ5bWtnaGRnenVkc3FpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxODczNTEsImV4cCI6MjA5Mzc2MzM1MX0.rSBm94EJnvqr1pBGiiBq6F3kbR1VO5sSrvDqfiMR_HE';
+    /* ============================================================ */
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
+    });
+
+    // ------- Elements -------
+    const $ = (id) => document.getElementById(id);
+    const loadingState = $('loading-state');
+    const profileState = $('profile-state');
+    const notfoundState = $('notfound-state');
+    const errorState = $('error-state');
+
+    function show(section) {
+      for (const s of [loadingState, profileState, notfoundState, errorState]) {
+        s.hidden = s !== section;
+      }
+      loadingState.setAttribute('aria-busy', section === loadingState ? 'true' : 'false');
+    }
+
+    // ------- Booking code from the path -------
+    // The catch-all rewrite in vercel.json serves this file for /<code>, so the
+    // browser URL still holds the code the client actually scanned or typed.
+    function readCode() {
+      const raw = decodeURIComponent(window.location.pathname || '')
+        .replace(/^\/+/, '')
+        .replace(/\/+$/, '');
+      return raw.toLowerCase();
+    }
+
+    // Mirrors the server-side format rules on profiles.booking_code. A path that
+    // can't be a code is a guaranteed miss, so we skip the round trip entirely.
+    function isPlausibleCode(code) {
+      return /^[a-z0-9](?:[a-z0-9-]{2,28})[a-z0-9]$/.test(code);
+    }
+
+    // ------- Profession label from the is_* flags -------
+    const PROFESSION_LABELS = [
+      ['is_stylist', 'Stylist'],
+      ['is_barber', 'Barber'],
+      ['is_nailtech', 'Nail Tech'],
+      ['is_spa', 'Spa'],
+      ['is_makeup_artist', 'Makeup Artist'],
+      ['is_lash_brow', 'Lash & Brow'],
+    ];
+
+    function professionsFor(profile) {
+      const labels = PROFESSION_LABELS
+        .filter(([flag]) => profile[flag] === true)
+        .map(([, label]) => label);
+      // Fall back to professional_type only when no flag is set, so a legacy row
+      // without the booleans still shows something meaningful.
+      if (labels.length === 0 && profile.professional_type) {
+        const t = String(profile.professional_type).trim();
+        if (t && t.toLowerCase() !== 'both') {
+          labels.push(t.charAt(0).toUpperCase() + t.slice(1));
+        }
+      }
+      return labels;
+    }
+
+    function initialsFor(name) {
+      const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
+      if (parts.length === 0) return '?';
+      return parts.slice(0, 2).map((p) => p[0]).join('').toUpperCase();
+    }
+
+    // Only ever render an image from an http(s) source — never javascript:/data:
+    function isSafeImageUrl(url) {
+      try {
+        const u = new URL(url, window.location.origin);
+        return u.protocol === 'https:' || u.protocol === 'http:';
+      } catch {
+        return false;
+      }
+    }
+
+    // ------- Render -------
+    // Every value below goes in via textContent, never innerHTML: these are
+    // pro-authored strings and must not be able to inject markup.
+    function render(profile, code) {
+      const name = profile.display_name || '';
+      $('display-name').textContent = name;
+      document.title = name ? `${name} · RezTheLook` : 'Booking profile · RezTheLook';
+
+      const avatar = $('avatar');
+      avatar.textContent = '';
+      if (profile.photo_url && isSafeImageUrl(profile.photo_url)) {
+        const img = document.createElement('img');
+        img.src = profile.photo_url;
+        img.alt = name ? `Photo of ${name}` : 'Professional photo';
+        // A broken image would leave an empty ring — swap in initials instead.
+        img.addEventListener('error', () => {
+          avatar.textContent = '';
+          const span = document.createElement('span');
+          span.className = 'initials';
+          span.textContent = initialsFor(name);
+          avatar.appendChild(span);
+        });
+        avatar.appendChild(img);
+      } else {
+        const span = document.createElement('span');
+        span.className = 'initials';
+        span.textContent = initialsFor(name);
+        avatar.appendChild(span);
+      }
+
+      const salonEl = $('salon-name');
+      if (profile.salon_name) {
+        salonEl.textContent = profile.salon_name;
+        salonEl.hidden = false;
+      }
+
+      const professionsEl = $('professions');
+      professionsEl.textContent = '';
+      for (const label of professionsFor(profile)) {
+        const chip = document.createElement('span');
+        chip.className = 'chip';
+        chip.textContent = label;
+        professionsEl.appendChild(chip);
+      }
+
+      const bioEl = $('bio');
+      if (profile.bio) {
+        bioEl.textContent = profile.bio;
+        bioEl.hidden = false;
+      }
+
+      $('booking-code').textContent = code;
+
+      show(profileState);
+    }
+
+    // ------- Load -------
+    async function load() {
+      show(loadingState);
+
+      const code = readCode();
+      if (!isPlausibleCode(code)) {
+        show(notfoundState);
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase.rpc('get_public_booking_profile', {
+          p_code: code,
+        });
+
+        if (error) {
+          console.error('[pro] lookup failed:', error.message);
+          show(errorState);
+          return;
+        }
+
+        // Set-returning function: data is an array. Tolerate a bare record too.
+        const profile = Array.isArray(data) ? data[0] : data;
+        if (!profile) {
+          show(notfoundState);
+          return;
+        }
+
+        render(profile, code);
+      } catch (e) {
+        // Network failure, CDN block, bad config — never leave a blank page.
+        console.error('[pro] lookup threw:', e);
+        show(errorState);
+      }
+    }
+
+    $('retry-btn').addEventListener('click', load);
+
+    load();
+  </script>
+</body>
+</html>

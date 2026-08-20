@@ -1,0 +1,10 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "trailingSlash": false,
+  "rewrites": [
+    {
+      "source": "/((?!email-confirmed(?:/|$)|reset-password(?:/|$)|stripe-return(?:/|$)|stripe-refresh(?:/|$)|pro(?:/|$)|assets(?:/|$)|api(?:/|$))[^./]+)",
+      "destination": "/pro/index.html"
+    }
+  ]
+}
