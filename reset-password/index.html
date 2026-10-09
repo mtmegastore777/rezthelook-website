@@ -347,10 +347,27 @@
     const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
     const deepLink = APP_SCHEME + '#' + window.location.hash.replace(/^#/, '');
 
+    /* THE SUCCESS BUTTON MUST NOT CARRY THE TOKENS.
+       Both buttons used to share `deepLink`, which is built ONCE at page load out of the
+       recovery hash. That is right for the button on the form — it hands the app a live
+       link so the reset can be finished in the app instead of here — but by the time the
+       success view is on screen those same tokens have been SPENT: updateUser() consumed
+       the recovery grant and the signOut() below dropped the session. The app was handed a
+       dead token, setSession failed, and it showed an alert about an expired link seconds
+       after the password had in fact been changed.
+       (history.replaceState at the end of the submit handler strips the hash from the
+       ADDRESS BAR only; this href had already been written, so it kept the tokens.)
+       So the success button carries nothing. 'rezthelook://open' has no 'reset-password'
+       in it, and handlePasswordResetLink in the app (App.js) returns on exactly that test
+       before it reads a hash or touches a session — so the app simply opens. The scheme is
+       registered with no host restriction (app.json "scheme": "rezthelook"), so any path
+       after it opens the app on both platforms. */
+    const APP_OPEN_LINK = 'rezthelook://open';
+
     if (isMobile) {
       appCta.classList.add('show');
       openAppLink.setAttribute('href', deepLink);
-      openAppSuccess.setAttribute('href', deepLink);
+      openAppSuccess.setAttribute('href', APP_OPEN_LINK);
       openAppSuccess.style.display = 'flex';
     }
 
