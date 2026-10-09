@@ -285,8 +285,8 @@
         <div class="icon" aria-hidden="true">
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="13"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
         </div>
-        <h2 id="invalid-title">This link has expired</h2>
-        <p id="invalid-body">Password reset links are valid for one hour. Open the RezTheLook app and tap <strong>Forgot password?</strong> to request a new one.</p>
+        <h2 id="invalid-title">This link has expired or was already used</h2>
+        <p id="invalid-body">Reset links work once and expire after one hour. Open the RezTheLook app and tap <strong>Forgot password?</strong> to request a new one.</p>
       </div>
 
     </main>
@@ -394,8 +394,8 @@
         title.textContent = 'This link isn\u2019t valid';
         body.innerHTML = 'Open the RezTheLook app and tap <strong>Forgot password?</strong> to request a fresh reset link.';
       } else if (code === 'otp_expired') {
-        title.textContent = 'This link has expired';
-        body.innerHTML = 'Password reset links are valid for one hour. Open the RezTheLook app and tap <strong>Forgot password?</strong> to request a new one.';
+        title.textContent = 'This link has expired or was already used';
+        body.innerHTML = 'Reset links work once and expire after one hour. Open the RezTheLook app and tap <strong>Forgot password?</strong> to request a new one.';
       } else {
         title.textContent = 'We couldn\u2019t verify this link';
         body.innerHTML = (description ? description.replace(/\+/g, ' ') + '. ' : '') +
