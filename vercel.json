@@ -3,7 +3,7 @@
   "trailingSlash": false,
   "rewrites": [
     {
-      "source": "/((?!email-confirmed(?:/|$)|reset-password(?:/|$)|stripe-return(?:/|$)|stripe-refresh(?:/|$)|pro(?:/|$)|assets(?:/|$)|api(?:/|$))[^./]+)",
+      "source": "/((?!email-confirmed(?:/|$)|reset-password(?:/|$)|stripe-return(?:/|$)|stripe-refresh(?:/|$)|subscribe(?:/|$)|subscribed(?:/|$)|subscribe-cancelled(?:/|$)|update-card(?:/|$)|pro(?:/|$)|assets(?:/|$)|api(?:/|$))[^./]+)",
       "destination": "/pro/index.html"
     }
   ]
