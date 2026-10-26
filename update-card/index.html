@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex" />
+  <meta name="referrer" content="no-referrer" />
+  <title>Update card - RezTheLook</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:wght@600;700&display=swap" rel="stylesheet" />
+  <!--
+    RUN 2c — rezthelook.com/update-card?t=… (a one-time link from the app; 2d's Home warning opens it).
+    The Owner saves a new card with Stripe Checkout in SETUP mode; back here (?session_id=…) the server makes
+    it the subscription's card and charges any open invoice to it AT ONCE (decision e: paying brings
+    everything back immediately). Talks only to the billing-update-card function; no key on this page.
+  -->
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { min-height: 100%; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background-color: #0D1B3E; color: #333;
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100vh; padding: 24px; line-height: 1.5; -webkit-font-smoothing: antialiased;
+    }
+    .card {
+      background-color: #FAF8F4; border-radius: 24px; border: 1px solid rgba(212, 175, 55, 0.35);
+      width: 100%; max-width: 460px; padding: 36px 30px; text-align: center;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+    }
+    h1 { font-size: 25px; font-weight: 700; color: #0D1B3E; margin-bottom: 12px; letter-spacing: -0.01em; }
+    .salon { font-size: 15px; color: #777; margin-bottom: 18px; }
+    .message { font-size: 15px; color: #555; line-height: 1.65; margin-bottom: 18px; }
+    .price {
+      background-color: #0D1B3E; color: #fff; border-radius: 16px; padding: 16px; margin-bottom: 18px;
+      font-size: 16px; font-weight: 600;
+    }
+    .cta {
+      display: block; width: 100%; background-color: #0D1B3E; color: #ffffff; text-decoration: none; border: 0;
+      font-family: inherit; font-size: 16px; font-weight: 600; padding: 16px 20px; border-radius: 14px; cursor: pointer;
+    }
+    .cta:disabled { opacity: 0.6; cursor: default; }
+    .subtext { font-size: 13px; color: #888; margin-top: 14px; }
+    .divider { height: 1px; background-color: rgba(212, 175, 55, 0.3); margin: 24px 0 18px; }
+    .wordmark { font-family: 'Lora', Georgia, serif; font-weight: 700; font-size: 18px; color: #0D1B3E; }
+    .wordmark .gold { color: #D4AF37; }
+    @media (max-width: 420px) { .card { padding: 30px 20px; border-radius: 20px; } h1 { font-size: 22px; } }
+  </style>
+</head>
+<body>
+  <main class="card" role="main">
+    <div id="content"><p class="message">Loading…</p></div>
+    <div class="divider"></div>
+    <div class="wordmark">Rez<span class="gold">The</span>Look</div>
+  </main>
+  <script>
+    var FN = 'https://xwykrxbymkghdgzudsqi.supabase.co/functions/v1/billing-update-card';
+    var q = new URLSearchParams(location.search);
+    var token = q.get('t') || '';
+    var sessionId = q.get('session_id') || '';
+    var content = document.getElementById('content');
+    var AGAIN = 'Go back to the RezTheLook app and tap “Update card” again.';
+    try { history.replaceState(null, '', location.pathname); } catch (e) {}
+
+    function el(tag, cls, text) {
+      var e = document.createElement(tag);
+      if (cls) e.className = cls;
+      if (text !== undefined) e.textContent = text;
+      return e;
+    }
+    function money(minor, currency) {
+      try { return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency }).format(minor / 100); }
+      catch (e) { return (minor / 100).toFixed(2) + ' ' + currency; }
+    }
+    function cardName(c) { return c ? (c.brand ? c.brand.charAt(0).toUpperCase() + c.brand.slice(1) : 'Card') + ' ending in ' + c.last4 : null; }
+    function call(body) {
+      return fetch(FN, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })
+        .then(function (r) { return r.json(); });
+    }
+    function page(title, text) {
+      content.innerHTML = '';
+      content.appendChild(el('h1', '', title));
+      if (text) content.appendChild(el('p', 'message', text));
+    }
+    function appLink() {
+      var a = el('a', 'cta', 'Open the RezTheLook app');
+      a.href = 'rezthelook://subscribed';
+      content.appendChild(a);
+    }
+    function failed() { page('Something went wrong', 'Your card wasn’t changed. ' + AGAIN); appLink(); }
+    function refused(code) {
+      if (code === 'link_used') page('This link was already used', AGAIN);
+      else if (code === 'link_expired') page('This link has expired', AGAIN);
+      else if (code === 'checkout_expired') page('This page has expired', AGAIN);
+      else page('This link isn’t valid', AGAIN);
+      appLink();
+    }
+
+    function showOffer(r) {
+      page('Update your card', null);
+      if (r.salon_name) content.appendChild(el('p', 'salon', 'For ' + r.salon_name));
+      if (r.card) content.appendChild(el('p', 'message', 'Card on file: ' + cardName(r.card) + '.'));
+      content.appendChild(el('div', 'price', r.amount_due > 0
+        ? 'Due now: ' + money(r.amount_due, r.currency) + ' — charged to your new card as soon as you save it.'
+        : 'Nothing is due right now. Your new card will be used for your next payment.'));
+      var b = el('button', 'cta', 'Add your new card');
+      b.onclick = function () {
+        b.disabled = true; b.textContent = 'Opening…';
+        call({ action: 'start', t: token }).then(function (s) {
+          if (s.state === 'redirect' && s.url) location.href = s.url;
+          else if (s.state === 'refused') refused(s.code);
+          else failed();
+        }).catch(failed);
+      };
+      content.appendChild(b);
+      content.appendChild(el('p', 'subtext', 'Your card is saved securely by Stripe.'));
+    }
+
+    function showResult(r) {
+      if (r.state === 'card_updated') {
+        if (r.locked) {
+          page('Your card is saved', 'To turn your salon back on, please contact support@rezthelook.com.');
+        } else if (r.amount_paid > 0) {
+          page('Your card is updated', 'Payment received: ' + money(r.amount_paid, r.currency) + '. Your subscription is active again.');
+        } else {
+          page('Your card is updated', 'Your new card will be used for your next payment.');
+        }
+        return appLink();
+      }
+      if (r.state === 'needs_confirmation') {
+        page('Your bank wants you to confirm this payment', 'Your new card is saved. Confirm the payment to finish.');
+        if (r.confirm_url) {
+          var a = el('a', 'cta', 'Confirm the payment');
+          a.href = r.confirm_url;
+          content.appendChild(a);
+        }
+        return;
+      }
+      if (r.state === 'declined') {
+        page('Your new card was declined', 'Your card is saved, but the payment didn’t go through. ' + AGAIN);
+        return appLink();
+      }
+      if (r.state === 'not_complete') { page('Your card wasn’t changed', 'Nothing was charged. ' + AGAIN); return appLink(); }
+      if (r.state === 'refused') return refused(r.code);
+      failed();
+    }
+
+    if (q.get('cancelled')) { page('Your card wasn’t changed', 'Nothing was charged.'); appLink(); }
+    else if (sessionId) call({ action: 'finish', session_id: sessionId }).then(showResult).catch(failed);
+    else if (token) call({ action: 'peek', t: token }).then(function (r) {
+      if (r.state === 'offer') showOffer(r); else if (r.state === 'refused') refused(r.code); else failed();
+    }).catch(failed);
+    else refused('link_invalid');
+  </script>
+</body>
+</html>
