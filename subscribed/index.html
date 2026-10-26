@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex" />
+  <meta name="referrer" content="no-referrer" />
+  <title>You're all set - RezTheLook</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:wght@600;700&display=swap" rel="stylesheet" />
+  <!--
+    RUN 2c — rezthelook.com/subscribed?session_id=… , where Stripe Checkout returns after the card was saved.
+    The server reads the card, checks one free trial per person and per card, and only then starts the
+    subscription. If no trial applies, NOTHING is started: this page shows that the free trial was already
+    used and the amount due today, and only the pro's tap on "Pay … today" starts it (charged at once).
+    Talks only to the billing-subscribe function; no key on this page.
+  -->
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { min-height: 100%; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background-color: #0D1B3E; color: #333;
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100vh; padding: 24px; line-height: 1.5; -webkit-font-smoothing: antialiased;
+    }
+    .card {
+      background-color: #FAF8F4; border-radius: 24px; border: 1px solid rgba(212, 175, 55, 0.35);
+      width: 100%; max-width: 460px; padding: 36px 30px; text-align: center;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+    }
+    h1 { font-size: 25px; font-weight: 700; color: #0D1B3E; margin-bottom: 12px; letter-spacing: -0.01em; }
+    .message { font-size: 15px; color: #555; line-height: 1.65; margin-bottom: 18px; }
+    .price {
+      background-color: #0D1B3E; color: #fff; border-radius: 16px; padding: 16px; margin-bottom: 18px;
+      font-size: 16px; font-weight: 600;
+    }
+    .badge {
+      display: inline-block; background-color: #fff3cd; color: #7a5b00; border: 1px solid #D4AF37;
+      border-radius: 20px; padding: 6px 14px; font-size: 13px; font-weight: 600; margin-bottom: 16px;
+    }
+    .cta {
+      display: block; width: 100%; background-color: #0D1B3E; color: #ffffff; text-decoration: none; border: 0;
+      font-family: inherit; font-size: 16px; font-weight: 600; padding: 16px 20px; border-radius: 14px; cursor: pointer;
+      margin-bottom: 12px;
+    }
+    .cta:disabled { opacity: 0.6; cursor: default; }
+    .secondary {
+      display: block; width: 100%; background-color: #fff; color: #0D1B3E; text-decoration: none;
+      border: 1.5px solid #0D1B3E; font-family: inherit; font-size: 15px; font-weight: 600; padding: 14px 20px;
+      border-radius: 14px; cursor: pointer; margin-bottom: 12px;
+    }
+    .subtext { font-size: 13px; color: #888; margin-top: 4px; }
+    .divider { height: 1px; background-color: rgba(212, 175, 55, 0.3); margin: 24px 0 18px; }
+    .wordmark { font-family: 'Lora', Georgia, serif; font-weight: 700; font-size: 18px; color: #0D1B3E; }
+    .wordmark .gold { color: #D4AF37; }
+    @media (max-width: 420px) { .card { padding: 30px 20px; border-radius: 20px; } h1 { font-size: 22px; } }
+  </style>
+</head>
+<body>
+  <main class="card" role="main">
+    <div id="content"><p class="message">Setting up your subscription…</p></div>
+    <div class="divider"></div>
+    <div class="wordmark">Rez<span class="gold">The</span>Look</div>
+  </main>
+  <script>
+    var FN = 'https://xwykrxbymkghdgzudsqi.supabase.co/functions/v1/billing-subscribe';
+    var sessionId = new URLSearchParams(location.search).get('session_id') || '';
+    var content = document.getElementById('content');
+    var AGAIN = 'Go back to the RezTheLook app and tap “Continue on rezthelook.com” again.';
+
+    function el(tag, cls, text) {
+      var e = document.createElement(tag);
+      if (cls) e.className = cls;
+      if (text !== undefined) e.textContent = text;
+      return e;
+    }
+    function money(minor, currency) {
+      try { return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency }).format(minor / 100); }
+      catch (e) { return (minor / 100).toFixed(2) + ' ' + currency; }
+    }
+    function taxWord(o) { return o.tax_behavior === 'inclusive' ? 'tax included' : '+ tax'; }
+    function day(iso) { return new Date(iso).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }); }
+    function call(body) {
+      body.session_id = sessionId;
+      return fetch(FN, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })
+        .then(function (r) { return r.json(); });
+    }
+    function page(title, text) {
+      content.innerHTML = '';
+      content.appendChild(el('h1', '', title));
+      if (text) content.appendChild(el('p', 'message', text));
+    }
+    function appLink(cls) {
+      var a = el('a', cls || 'cta', 'Open the RezTheLook app');
+      a.href = 'rezthelook://subscribed';
+      content.appendChild(a);
+    }
+    function button(text, cls, onclick) {
+      var b = el('button', cls, text);
+      b.onclick = function () { b.disabled = true; onclick(); };
+      content.appendChild(b);
+      return b;
+    }
+    function restart() {
+      call({ action: 'restart' }).then(function (r) {
+        if (r.state === 'redirect' && r.url) location.href = r.url; else show(r);
+      }).catch(failed);
+    }
+    function failed() { page('Something went wrong', 'Nothing was charged. ' + AGAIN); appLink(); }
+
+    function show(r) {
+      var o = r.offer || {};
+      if (r.state === 'subscribed') {
+        content.innerHTML = '';
+        if (r.founding) content.appendChild(el('div', 'badge', '✨ Founding Pro'));
+        content.appendChild(el('h1', '', 'You’re all set — go back to the app'));
+        if (r.trial) {
+          content.appendChild(el('p', 'message', 'Your ' + r.trial_days + '-day free trial has started. Your first charge is on ' +
+            day(r.trial_end) + ': ' + money(r.monthly_amount, r.currency) + ' ' + taxWord(r) + '. You can cancel in the app before then.'));
+        } else {
+          content.appendChild(el('p', 'message', 'Your subscription is active and your first payment went through.'));
+        }
+        return appLink();
+      }
+      if (r.state === 'trial_used' || r.state === 'payment_failed') {
+        page(r.state === 'trial_used' ? 'Your free trial has already been used' : 'Your card was declined',
+          r.state === 'trial_used' ? 'Add a card to start your subscription and keep using RezTheLook.' : 'Nothing was charged. Try another card.');
+        content.appendChild(el('div', 'price', 'Due today: ' + money(o.monthly_amount, o.currency) + ' ' + taxWord(o) + ', then every month'));
+        if (r.state === 'trial_used') {
+          button('Pay ' + money(o.monthly_amount, o.currency) + ' ' + taxWord(o) + ' today', 'cta', function () {
+            call({ action: 'pay' }).then(show).catch(failed);
+          });
+        }
+        button('Use a different card', r.state === 'trial_used' ? 'secondary' : 'cta', restart);
+        content.appendChild(el('p', 'subtext', 'Not now? Just close this page. Nothing has been charged.'));
+        return;
+      }
+      if (r.state === 'wallet_card') {
+        page('Please type in your card', 'Apple Pay and Google Pay can’t be used to start a free trial. Please enter your card details instead.');
+        return button('Enter card details', 'cta', restart);
+      }
+      if (r.state === 'offer_changed') {
+        page('Founding Pro spots just ran out', 'Your free trial is ' + o.trial_days + ' days. Your first charge is on ' + day(o.first_charge_at) +
+          ': ' + money(o.monthly_amount, o.currency) + ' ' + taxWord(o) + '. You can cancel in the app before then.');
+        return button('Start my ' + o.trial_days + '-day free trial', 'cta', function () {
+          call({ action: 'finish', accept_trial_days: o.trial_days }).then(show).catch(failed);
+        });
+      }
+      if (r.state === 'busy') {
+        page('Another sign-up is in progress', 'Please wait a minute, then try again.');
+        return button('Try again', 'cta', function () { call({ action: 'finish' }).then(show).catch(failed); });
+      }
+      if (r.state === 'not_complete') {
+        page('Your card wasn’t added', 'Nothing was charged.');
+        return button('Add your card', 'cta', restart);
+      }
+      if (r.state === 'failed') {
+        page('We couldn’t start your subscription', 'Nothing was charged. Please try again.');
+        return button('Try again', 'cta', restart);
+      }
+      if (r.state === 'already_subscribed') {
+        page('Your salon already has a subscription', 'Go back to the RezTheLook app to keep using it.');
+        return appLink();
+      }
+      if (r.state === 'refused' && r.code === 'checkout_expired') {
+        page('This page has expired', AGAIN);
+        return appLink();
+      }
+      failed();
+    }
+
+    if (!sessionId) failed();
+    else call({ action: 'finish' }).then(show).catch(failed);
+  </script>
+</body>
+</html>
