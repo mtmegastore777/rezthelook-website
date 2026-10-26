@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex" />
+  <meta name="referrer" content="no-referrer" />
+  <title>Your subscription - RezTheLook</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:wght@600;700&display=swap" rel="stylesheet" />
+  <!--
+    RUN 2c — rezthelook.com/subscribe?t=… , opened by the app's "Continue on rezthelook.com" button with a
+    one-time link (10 minutes, one use). Shows, BEFORE any card: the salon, the country's price, the free
+    trial (or that none applies), the date of the first charge, and that the pro can cancel in the app
+    before then. "Add your card" opens Stripe Checkout in SETUP mode: it saves the card and charges nothing.
+    Stripe then returns to /subscribed. Talks only to the billing-subscribe function; no key on this page.
+  -->
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { min-height: 100%; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background-color: #0D1B3E; color: #333;
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100vh; padding: 24px; line-height: 1.5; -webkit-font-smoothing: antialiased;
+    }
+    .card {
+      background-color: #FAF8F4; border-radius: 24px; border: 1px solid rgba(212, 175, 55, 0.35);
+      width: 100%; max-width: 460px; padding: 36px 30px; text-align: center;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+    }
+    h1 { font-size: 25px; font-weight: 700; color: #0D1B3E; margin-bottom: 10px; letter-spacing: -0.01em; }
+    .salon { font-size: 15px; color: #777; margin-bottom: 18px; }
+    .message { font-size: 15px; color: #555; line-height: 1.65; margin-bottom: 18px; }
+    .price {
+      background-color: #0D1B3E; color: #fff; border-radius: 16px; padding: 18px 16px; margin-bottom: 18px;
+      font-size: 16px; font-weight: 600; line-height: 1.5;
+    }
+    .facts { text-align: left; font-size: 14px; color: #444; margin: 0 0 22px; padding-left: 20px; }
+    .facts li { margin-bottom: 8px; }
+    .badge {
+      display: inline-block; background-color: #fff3cd; color: #7a5b00; border: 1px solid #D4AF37;
+      border-radius: 20px; padding: 6px 14px; font-size: 13px; font-weight: 600; margin-bottom: 16px;
+    }
+    .notice { background-color: #fff3cd; border-radius: 12px; padding: 12px; font-size: 14px; color: #6b5100; margin-bottom: 16px; }
+    .cta {
+      display: block; width: 100%; background-color: #0D1B3E; color: #ffffff; text-decoration: none; border: 0;
+      font-family: inherit; font-size: 16px; font-weight: 600; padding: 16px 20px; border-radius: 14px; cursor: pointer;
+    }
+    .cta:disabled { opacity: 0.6; cursor: default; }
+    .subtext { font-size: 13px; color: #888; margin-top: 14px; }
+    .divider { height: 1px; background-color: rgba(212, 175, 55, 0.3); margin: 26px 0 18px; }
+    .wordmark { font-family: 'Lora', Georgia, serif; font-weight: 700; font-size: 18px; color: #0D1B3E; }
+    .wordmark .gold { color: #D4AF37; }
+    @media (max-width: 420px) { .card { padding: 30px 20px; border-radius: 20px; } h1 { font-size: 22px; } }
+  </style>
+</head>
+<body>
+  <main class="card" role="main">
+    <div id="content"><p class="message">Loading…</p></div>
+    <div class="divider"></div>
+    <div class="wordmark">Rez<span class="gold">The</span>Look</div>
+  </main>
+  <script>
+    var FN = 'https://xwykrxbymkghdgzudsqi.supabase.co/functions/v1/billing-subscribe';
+    var token = new URLSearchParams(location.search).get('t') || '';
+    var content = document.getElementById('content');
+    var shown = null;
+
+    // The link's token is only needed in memory: take it out of the address bar (and so out of history).
+    try { history.replaceState(null, '', location.pathname); } catch (e) {}
+
+    function el(tag, cls, text) {
+      var e = document.createElement(tag);
+      if (cls) e.className = cls;
+      if (text !== undefined) e.textContent = text;
+      return e;
+    }
+    function money(minor, currency) {
+      try { return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency }).format(minor / 100); }
+      catch (e) { return (minor / 100).toFixed(2) + ' ' + currency; }
+    }
+    function taxWord(o) { return o.tax_behavior === 'inclusive' ? 'tax included' : '+ tax'; }
+    function day(iso) {
+      return new Date(iso).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    }
+    function priceLine(o) {
+      return money(o.base_amount, o.currency) + '/month ' + taxWord(o) + ', ' + money(o.added_pro_amount, o.currency) +
+        ' for each added pro, added pros ' + (o.paid_added_pros + 1) + ' to ' + o.max_added_pros + ' free';
+    }
+    function backToApp(title, text) {
+      content.innerHTML = '';
+      content.appendChild(el('h1', '', title));
+      content.appendChild(el('p', 'message', text));
+      var a = el('a', 'cta', 'Open the RezTheLook app');
+      a.href = 'rezthelook://subscribed';
+      content.appendChild(a);
+    }
+    var AGAIN = 'Go back to the RezTheLook app and tap “Continue on rezthelook.com” again.';
+    function refused(code) {
+      if (code === 'link_used') return backToApp('This link was already used', AGAIN);
+      if (code === 'link_expired') return backToApp('This link has expired', AGAIN);
+      if (code === 'already_subscribed') return backToApp('Your salon already has a subscription', 'Go back to the RezTheLook app to keep using it.');
+      return backToApp('This link isn’t valid', AGAIN);
+    }
+    function failed() {
+      backToApp('Something went wrong', 'Nothing was charged. ' + AGAIN);
+    }
+
+    function showOffer(o, notice) {
+      shown = o;
+      content.innerHTML = '';
+      var trial = typeof o.trial_days === 'number';
+      if (o.founding) content.appendChild(el('div', 'badge', '✨ Founding Pro'));
+      content.appendChild(el('h1', '', trial ? 'Start your ' + o.trial_days + '-day free trial' : 'Your free trial has already been used'));
+      if (o.salon_name) content.appendChild(el('p', 'salon', 'For ' + o.salon_name));
+      if (notice) content.appendChild(el('div', 'notice', notice));
+      if (!trial) content.appendChild(el('p', 'message', 'Add a card to start your subscription and keep using RezTheLook.'));
+      content.appendChild(el('div', 'price', priceLine(o)));
+      var facts = el('ul', 'facts');
+      if (o.added_pros > 0) {
+        facts.appendChild(el('li', '', 'Your salon has ' + o.added_pros + ' added pro' + (o.added_pros === 1 ? '' : 's') + ': ' +
+          money(o.monthly_amount, o.currency) + '/month ' + taxWord(o) + ' in all.'));
+      }
+      if (trial) {
+        if (o.founding) facts.appendChild(el('li', '', 'You’re one of our first 200 pros: 30 days free and the Founding Pro badge.'));
+        facts.appendChild(el('li', '', 'Free for ' + o.trial_days + ' days. You won’t be charged today.'));
+        facts.appendChild(el('li', '', 'Your first charge is on ' + day(o.first_charge_at) + ': ' + money(o.monthly_amount, o.currency) + ' ' + taxWord(o) + ', then every month.'));
+        facts.appendChild(el('li', '', 'You can cancel in the app before ' + day(o.first_charge_at) + ' and you won’t be charged.'));
+      } else {
+        facts.appendChild(el('li', '', 'Due today: ' + money(o.monthly_amount, o.currency) + ' ' + taxWord(o) + ', then every month on the same day.'));
+        facts.appendChild(el('li', '', 'Nothing is charged until you tap Pay on the next page.'));
+        facts.appendChild(el('li', '', 'You can cancel in the app at any time.'));
+      }
+      content.appendChild(facts);
+      var b = el('button', 'cta', 'Add your card');
+      b.onclick = goToCard;
+      content.appendChild(b);
+      content.appendChild(el('p', 'subtext', 'Your card is saved securely by Stripe.'));
+    }
+
+    function call(body) {
+      return fetch(FN, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })
+        .then(function (r) { return r.json(); });
+    }
+
+    function goToCard() {
+      var b = document.querySelector('.cta');
+      if (b) { b.disabled = true; b.textContent = 'Opening…'; }
+      call({ action: 'checkout', t: token, expected_trial_days: shown ? shown.trial_days : null }).then(function (r) {
+        if (r.state === 'redirect' && r.url) { location.href = r.url; return; }
+        if (r.state === 'offer_changed') {
+          return showOffer(r.offer, typeof r.offer.trial_days === 'number'
+            ? 'Founding Pro spots just ran out. Your free trial is ' + r.offer.trial_days + ' days.'
+            : 'Your free trial has already been used.');
+        }
+        if (r.state === 'already_subscribed' || r.state === 'refused') return refused(r.code || r.state);
+        failed();
+      }).catch(failed);
+    }
+
+    if (!token) refused('link_invalid');
+    else call({ action: 'peek', t: token }).then(function (r) {
+      if (r.state === 'offer') return showOffer(r.offer);
+      if (r.state === 'already_subscribed') return refused('already_subscribed');
+      if (r.state === 'refused') return refused(r.code);
+      failed();
+    }).catch(failed);
+  </script>
+</body>
+</html>
