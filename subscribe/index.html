@@ -124,7 +124,7 @@
           money(o.monthly_amount, o.currency) + '/month ' + taxWord(o) + ' in all.'));
       }
       if (trial) {
-        if (o.founding) facts.appendChild(el('li', '', 'You’re one of our first 200 pros: 30 days free and the Founding Pro badge.'));
+        if (o.founding) facts.appendChild(el('li', '', 'You’re one of the first 200 pros in your country: 30 days free and the Founding Pro badge.'));
         facts.appendChild(el('li', '', 'Free for ' + o.trial_days + ' days. You won’t be charged today.'));
         facts.appendChild(el('li', '', 'Your first charge is on ' + day(o.first_charge_at) + ': ' + money(o.monthly_amount, o.currency) + ' ' + taxWord(o) + ', then every month.'));
         facts.appendChild(el('li', '', 'You can cancel in the app before ' + day(o.first_charge_at) + ' and you won’t be charged.'));
