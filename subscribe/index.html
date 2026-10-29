@@ -15,6 +15,9 @@
     trial (or that none applies), the date of the first charge, and that the pro can cancel in the app
     before then. "Add your card" opens Stripe Checkout in SETUP mode: it saves the card and charges nothing.
     Stripe then returns to /subscribed. Talks only to the billing-subscribe function; no key on this page.
+    RUN 2c-CONSENT: "Add your card" works only once the pro ticks the box. Its text comes from the server
+    with the offer (what will be charged, when, and that they can cancel); the server refuses the card step
+    if the text sent back is not exactly the one it built, and keeps the consent.
   -->
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -49,6 +52,15 @@
       font-family: inherit; font-size: 16px; font-weight: 600; padding: 16px 20px; border-radius: 14px; cursor: pointer;
     }
     .cta:disabled { opacity: 0.6; cursor: default; }
+    .cta.off { opacity: 0.6; }
+    .consent {
+      display: flex; gap: 10px; align-items: flex-start; text-align: left; font-size: 13px; color: #444;
+      line-height: 1.55; margin: 0 0 14px; cursor: pointer;
+    }
+    .consent input { flex: 0 0 auto; width: 20px; height: 20px; margin-top: 1px; accent-color: #0D1B3E; cursor: pointer; }
+    .consent a { color: #0D1B3E; font-weight: 600; }
+    .consent-error { color: #b42318; font-size: 14px; font-weight: 600; margin: 0 0 12px; }
+    .consent-error:empty { display: none; }
     .subtext { font-size: 13px; color: #888; margin-top: 14px; }
     .divider { height: 1px; background-color: rgba(212, 175, 55, 0.3); margin: 26px 0 18px; }
     .wordmark { font-family: 'Lora', Georgia, serif; font-weight: 700; font-size: 18px; color: #0D1B3E; }
@@ -67,6 +79,8 @@
     var token = new URLSearchParams(location.search).get('t') || '';
     var content = document.getElementById('content');
     var shown = null;
+    var TZ = '';
+    try { TZ = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) {}
 
     // The link's token is only needed in memory: take it out of the address bar (and so out of history).
     try { history.replaceState(null, '', location.pathname); } catch (e) {}
@@ -86,8 +100,50 @@
       return new Date(iso).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
     }
     function priceLine(o) {
-      return money(o.base_amount, o.currency) + '/month ' + taxWord(o) + ', ' + money(o.added_pro_amount, o.currency) +
-        ' for each added pro, added pros ' + (o.paid_added_pros + 1) + ' to ' + o.max_added_pros + ' free';
+      var line = money(o.base_amount, o.currency) + '/month ' + taxWord(o) + '.';
+      var paid = o.paid_added_pros, max = o.max_added_pros;
+      if (!(max > 0)) return line;
+      if (!(paid > 0)) return line + ' Each pro you add is free, up to ' + max + ' pro' + (max === 1 ? '' : 's') + '.';
+      line += ' Each pro you add: ' + money(o.added_pro_amount, o.currency) + '/month ' + taxWord(o) + ', up to ' +
+        Math.min(paid, max) + ' pro' + (Math.min(paid, max) === 1 ? '' : 's') + '.';
+      if (paid >= max) return line;
+      return line + (paid + 1 === max ? ' Pro ' + max + ' is free.' : ' Pros ' + (paid + 1) + ' to ' + max + ' are free.');
+    }
+    // RUN 2c-CONSENT. The box: the server's own text for this offer ("Terms of Service" is the link, in a new
+    // tab), unticked. The button stays dimmed and does nothing until it is ticked.
+    function consentText(c) {
+      var span = el('span');
+      var i = c.text.indexOf('Terms of Service');
+      if (i < 0 || !/^https:\/\//.test(c.terms_url || '')) { span.textContent = c.text; return span; }
+      span.appendChild(document.createTextNode(c.text.slice(0, i)));
+      var a = el('a', '', 'Terms of Service');
+      a.href = c.terms_url; a.target = '_blank'; a.rel = 'noopener';
+      span.appendChild(a);
+      span.appendChild(document.createTextNode(c.text.slice(i + 'Terms of Service'.length)));
+      return span;
+    }
+    function consentBox(c, button) {
+      var label = el('label', 'consent');
+      var box = el('input');
+      box.type = 'checkbox';
+      label.appendChild(box);
+      label.appendChild(consentText(c));
+      var error = el('p', 'consent-error');
+      error.setAttribute('role', 'alert');
+      function sync() {
+        button.classList.toggle('off', !box.checked);
+        button.setAttribute('aria-disabled', box.checked ? 'false' : 'true');
+        if (box.checked) error.textContent = '';
+      }
+      box.onchange = sync;
+      sync();
+      content.appendChild(label);
+      content.appendChild(error);
+      return function agreed() {
+        if (box.checked) return { kind: c.kind, text: c.text };
+        error.textContent = 'Please tick the box to continue.';
+        return null;
+      };
     }
     function backToApp(title, text) {
       content.innerHTML = '';
@@ -109,6 +165,7 @@
     }
 
     function showOffer(o, notice) {
+      if (!o || !o.consent) return failed();
       shown = o;
       content.innerHTML = '';
       var trial = typeof o.trial_days === 'number';
@@ -135,21 +192,29 @@
       }
       content.appendChild(facts);
       var b = el('button', 'cta', 'Add your card');
-      b.onclick = goToCard;
+      var agreed = consentBox(o.consent, b);
+      b.onclick = function () { var c = agreed(); if (c) goToCard(c); };
       content.appendChild(b);
       content.appendChild(el('p', 'subtext', 'Your card is saved securely by Stripe.'));
     }
 
     function call(body) {
+      body.tz = TZ;
       return fetch(FN, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })
         .then(function (r) { return r.json(); });
     }
 
-    function goToCard() {
+    function goToCard(consent) {
       var b = document.querySelector('.cta');
       if (b) { b.disabled = true; b.textContent = 'Opening…'; }
-      call({ action: 'checkout', t: token, expected_trial_days: shown ? shown.trial_days : null }).then(function (r) {
+      call({ action: 'checkout', t: token, expected_trial_days: shown ? shown.trial_days : null, consent: consent }).then(function (r) {
         if (r.state === 'redirect' && r.url) { location.href = r.url; return; }
+        if (r.state === 'refused' && r.code === 'consent_missing') return showOffer(shown, 'Please tick the box to continue.');
+        if (r.state === 'refused' && r.code === 'consent_changed' && r.offer) {
+          return showOffer(r.offer, r.offer.trial_days !== shown.trial_days && typeof r.offer.trial_days === 'number' && typeof shown.trial_days === 'number'
+            ? 'Founding Pro spots just ran out. Your free trial is ' + r.offer.trial_days + ' days.'
+            : 'Something on this page changed. Please read it again and tick the box.');
+        }
         if (r.state === 'offer_changed') {
           return showOffer(r.offer, typeof r.offer.trial_days === 'number'
             ? 'Founding Pro spots just ran out. Your free trial is ' + r.offer.trial_days + ' days.'
