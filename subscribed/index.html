@@ -15,6 +15,9 @@
     subscription. If no trial applies, NOTHING is started: this page shows that the free trial was already
     used and the amount due today, and only the pro's tap on "Pay … today" starts it (charged at once).
     Talks only to the billing-subscribe function; no key on this page.
+    RUN 2c-CONSENT: the box ticked on /subscribe covers the trial it described. A NEW box is shown here when
+    the charge is not that one: "Pay … today" (unless the pro already agreed to this very charge, e.g. before a
+    declined card), a lost Founding spot (a shorter trial), or a trial whose first charge moved to another day.
   -->
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -52,6 +55,17 @@
       border-radius: 14px; cursor: pointer; margin-bottom: 12px;
     }
     .subtext { font-size: 13px; color: #888; margin-top: 4px; }
+    .cta.off { opacity: 0.6; }
+    .notice { background-color: #fff3cd; border-radius: 12px; padding: 12px; font-size: 14px; color: #6b5100; margin-bottom: 16px; }
+    .consent {
+      display: flex; gap: 10px; align-items: flex-start; text-align: left; font-size: 13px; color: #444;
+      line-height: 1.55; margin: 0 0 14px; cursor: pointer;
+    }
+    .consent input { flex: 0 0 auto; width: 20px; height: 20px; margin-top: 1px; accent-color: #0D1B3E; cursor: pointer; }
+    .consent a, .agreed a { color: #0D1B3E; font-weight: 600; }
+    .agreed { text-align: left; font-size: 13px; color: #444; line-height: 1.55; margin: 0 0 14px; }
+    .consent-error { color: #b42318; font-size: 14px; font-weight: 600; margin: 0 0 12px; }
+    .consent-error:empty { display: none; }
     .divider { height: 1px; background-color: rgba(212, 175, 55, 0.3); margin: 24px 0 18px; }
     .wordmark { font-family: 'Lora', Georgia, serif; font-weight: 700; font-size: 18px; color: #0D1B3E; }
     .wordmark .gold { color: #D4AF37; }
@@ -69,6 +83,8 @@
     var sessionId = new URLSearchParams(location.search).get('session_id') || '';
     var content = document.getElementById('content');
     var AGAIN = 'Go back to the RezTheLook app and tap “Continue on rezthelook.com” again.';
+    var TZ = '';
+    try { TZ = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) {}
 
     function el(tag, cls, text) {
       var e = document.createElement(tag);
@@ -84,6 +100,7 @@
     function day(iso) { return new Date(iso).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }); }
     function call(body) {
       body.session_id = sessionId;
+      body.tz = TZ;
       return fetch(FN, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })
         .then(function (r) { return r.json(); });
     }
@@ -109,9 +126,70 @@
       }).catch(failed);
     }
     function failed() { page('Something went wrong', 'Nothing was charged. ' + AGAIN); appLink(); }
+    // RUN 2c-CONSENT. The server's own text for this charge ("Terms of Service" is the link, in a new tab).
+    function consentText(c) {
+      var span = el('span');
+      var i = c.text.indexOf('Terms of Service');
+      if (i < 0 || !/^https:\/\//.test(c.terms_url || '')) { span.textContent = c.text; return span; }
+      span.appendChild(document.createTextNode(c.text.slice(0, i)));
+      var a = el('a', '', 'Terms of Service');
+      a.href = c.terms_url; a.target = '_blank'; a.rel = 'noopener';
+      span.appendChild(a);
+      span.appendChild(document.createTextNode(c.text.slice(i + 'Terms of Service'.length)));
+      return span;
+    }
+    // The box, unticked; the button stays dimmed and does nothing until it is ticked. Returns agreed():
+    // the consent to send, or null (and the message) when the box is not ticked.
+    function consentBox(c, button) {
+      var label = el('label', 'consent');
+      var box = el('input');
+      box.type = 'checkbox';
+      label.appendChild(box);
+      label.appendChild(consentText(c));
+      var error = el('p', 'consent-error');
+      error.setAttribute('role', 'alert');
+      function sync() {
+        button.classList.toggle('off', !box.checked);
+        button.setAttribute('aria-disabled', box.checked ? 'false' : 'true');
+        if (box.checked) error.textContent = '';
+      }
+      box.onchange = sync;
+      sync();
+      content.appendChild(label);
+      content.appendChild(error);
+      return function agreed() {
+        if (box.checked) return { kind: c.kind, text: c.text };
+        error.textContent = 'Please tick the box to continue.';
+        return null;
+      };
+    }
+    // A button that sends the consent with its request (none when the pro already agreed to this charge).
+    function consentButton(text, c, onFile, send) {
+      var b = el('button', 'cta', text);
+      var agreed = null;
+      if (onFile) {
+        var p = el('p', 'agreed', '✓ You already agreed: ');
+        p.appendChild(consentText(c));
+        content.appendChild(p);
+      } else {
+        agreed = consentBox(c, b);
+      }
+      b.onclick = function () {
+        var given = agreed ? agreed() : undefined;
+        if (given === null) return;
+        b.disabled = true;
+        send(given);
+      };
+      content.appendChild(b);
+      return b;
+    }
 
     function show(r) {
       var o = r.offer || {};
+      if (r.state === 'refused' && (r.code === 'consent_changed' || r.code === 'consent_missing') && r.offer) {
+        return show({ state: typeof o.trial_days === 'number' ? 'confirm_trial' : 'trial_used', offer: o, consent_on_file: false,
+          notice: r.code === 'consent_missing' ? 'Please tick the box to continue.' : 'Something on this page changed. Please read it again and tick the box.' });
+      }
       if (r.state === 'subscribed') {
         content.innerHTML = '';
         if (r.founding) content.appendChild(el('div', 'badge', '✨ Founding Pro'));
@@ -125,12 +203,14 @@
         return appLink();
       }
       if (r.state === 'trial_used' || r.state === 'payment_failed') {
+        if (r.state === 'trial_used' && !o.consent) return failed();
         page(r.state === 'trial_used' ? 'Your free trial has already been used' : 'Your card was declined',
           r.state === 'trial_used' ? 'Add a card to start your subscription and keep using RezTheLook.' : 'Nothing was charged. Try another card.');
+        if (r.notice) content.appendChild(el('div', 'notice', r.notice));
         content.appendChild(el('div', 'price', 'Due today: ' + money(o.monthly_amount, o.currency) + ' ' + taxWord(o) + ', then every month'));
         if (r.state === 'trial_used') {
-          button('Pay ' + money(o.monthly_amount, o.currency) + ' ' + taxWord(o) + ' today', 'cta', function () {
-            call({ action: 'pay' }).then(show).catch(failed);
+          consentButton('Pay ' + money(o.monthly_amount, o.currency) + ' ' + taxWord(o) + ' today', o.consent, r.consent_on_file === true, function (consent) {
+            call(consent ? { action: 'pay', consent: consent } : { action: 'pay' }).then(show).catch(failed);
           });
         }
         button('Use a different card', r.state === 'trial_used' ? 'secondary' : 'cta', restart);
@@ -141,11 +221,14 @@
         page('Please type in your card', 'Apple Pay and Google Pay can’t be used to start a free trial. Please enter your card details instead.');
         return button('Enter card details', 'cta', restart);
       }
-      if (r.state === 'offer_changed') {
-        page('Founding Pro spots just ran out', 'Your free trial is ' + o.trial_days + ' days. Your first charge is on ' + day(o.first_charge_at) +
+      if (r.state === 'offer_changed' || r.state === 'confirm_trial') {
+        if (!o.consent) return failed();
+        page(r.state === 'offer_changed' ? 'Founding Pro spots just ran out' : 'Please confirm your free trial',
+          'Your free trial is ' + o.trial_days + ' days. Your first charge is on ' + day(o.first_charge_at) +
           ': ' + money(o.monthly_amount, o.currency) + ' ' + taxWord(o) + '. You can cancel in the app before then.');
-        return button('Start my ' + o.trial_days + '-day free trial', 'cta', function () {
-          call({ action: 'finish', accept_trial_days: o.trial_days }).then(show).catch(failed);
+        if (r.notice) content.appendChild(el('div', 'notice', r.notice));
+        return consentButton('Start my ' + o.trial_days + '-day free trial', o.consent, false, function (consent) {
+          call({ action: 'finish', accept_trial_days: o.trial_days, consent: consent }).then(show).catch(failed);
         });
       }
       if (r.state === 'busy') {
