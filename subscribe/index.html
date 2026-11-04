@@ -96,9 +96,15 @@
       catch (e) { return (minor / 100).toFixed(2) + ' ' + currency; }
     }
     function taxWord(o) { return o.tax_behavior === 'inclusive' ? 'tax included' : '+ tax'; }
-    function day(iso) {
-      return new Date(iso).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    // RUN 2d-2c: a date in the salon's time zone (the offer's time_zone), so the page names the same day as the app.
+    function day(iso, tz) {
+      var o = { month: 'long', day: 'numeric', year: 'numeric' };
+      if (tz) o.timeZone = tz;
+      try { return new Date(iso).toLocaleDateString('en-US', o); }
+      catch (e) { return new Date(iso).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }); }
     }
+    // RUN 2d-2c: the charge day (the first charge comes just after midnight that day), as the server worked it out.
+    function chargeDay(o) { return o.first_charge_day || day(o.first_charge_at, o.time_zone); }
     function priceLine(o) {
       var line = money(o.base_amount, o.currency) + '/month ' + taxWord(o) + '.';
       var paid = o.paid_added_pros, max = o.max_added_pros;
@@ -183,12 +189,14 @@
       if (trial) {
         if (o.founding) facts.appendChild(el('li', '', 'You’re one of the first 200 pros in your country: 30 days free and the Founding Pro badge.'));
         facts.appendChild(el('li', '', 'Free for ' + o.trial_days + ' days. You won’t be charged today.'));
-        facts.appendChild(el('li', '', 'Your first charge is on ' + day(o.first_charge_at) + ': ' + money(o.monthly_amount, o.currency) + ' ' + taxWord(o) + ', then every month.'));
-        facts.appendChild(el('li', '', 'You can cancel in the app before ' + day(o.first_charge_at) + ' and you won’t be charged.'));
+        facts.appendChild(el('li', '', (o.last_free_day ? 'Your free trial ends on ' + o.last_free_day + '. ' : '') +
+          'Your first charge is on ' + chargeDay(o) + ', just after midnight: ' + money(o.monthly_amount, o.currency) + ' ' + taxWord(o) + ', then every month.'));
+        facts.appendChild(el('li', '', 'You can cancel in the app before ' + chargeDay(o) + ' and you won’t be charged.'));
       } else {
-        facts.appendChild(el('li', '', 'Due today: ' + money(o.monthly_amount, o.currency) + ' ' + taxWord(o) + ', then every month on the same day.'));
-        facts.appendChild(el('li', '', 'Nothing is charged until you tap Pay on the next page.'));
-        facts.appendChild(el('li', '', 'You can cancel in the app at any time.'));
+        // RUN 2d-2c: subscribing right away charges nothing today; the first charge is just after midnight tomorrow.
+        facts.appendChild(el('li', '', 'Your first charge is on ' + chargeDay(o) + ', just after midnight: ' + money(o.monthly_amount, o.currency) + ' ' + taxWord(o) + ', then every month.'));
+        facts.appendChild(el('li', '', 'Your subscription starts only when you tap Start my subscription on the next page.'));
+        facts.appendChild(el('li', '', 'You can cancel in the app before ' + chargeDay(o) + ' and you won’t be charged.'));
       }
       content.appendChild(facts);
       var b = el('button', 'cta', 'Add your card');
