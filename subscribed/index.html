@@ -97,7 +97,15 @@
       catch (e) { return (minor / 100).toFixed(2) + ' ' + currency; }
     }
     function taxWord(o) { return o.tax_behavior === 'inclusive' ? 'tax included' : '+ tax'; }
-    function day(iso) { return new Date(iso).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }); }
+    // RUN 2d-2c: a date in the salon's time zone (the answer's time_zone), so the page names the same day as the app.
+    function day(iso, tz) {
+      var o = { month: 'long', day: 'numeric', year: 'numeric' };
+      if (tz) o.timeZone = tz;
+      try { return new Date(iso).toLocaleDateString('en-US', o); }
+      catch (e) { return new Date(iso).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }); }
+    }
+    // RUN 2d-2c: the charge day (the first charge comes just after midnight that day), as the server worked it out.
+    function chargeDay(o) { return o.first_charge_day || day(o.first_charge_at, o.time_zone); }
     function call(body) {
       body.session_id = sessionId;
       body.tz = TZ;
@@ -196,7 +204,11 @@
         content.appendChild(el('h1', '', 'You’re all set — go back to the app'));
         if (r.trial) {
           content.appendChild(el('p', 'message', 'Your ' + r.trial_days + '-day free trial has started. Your first charge is on ' +
-            day(r.trial_end) + ': ' + money(r.monthly_amount, r.currency) + ' ' + taxWord(r) + '. You can cancel in the app before then.'));
+            (r.first_charge_day || day(r.trial_end, r.time_zone)) + ': ' + money(r.monthly_amount, r.currency) + ' ' + taxWord(r) + '. You can cancel in the app before then.'));
+        } else if (r.first_charge_day) {
+          // RUN 2d-2c: subscribing right away charges nothing today.
+          content.appendChild(el('p', 'message', 'Your subscription has started. Your first charge is on ' + r.first_charge_day + ': ' +
+            money(r.monthly_amount, r.currency) + ' ' + taxWord(r) + '. You can cancel in the app before then.'));
         } else {
           content.appendChild(el('p', 'message', 'Your subscription is active and your first payment went through.'));
         }
@@ -207,9 +219,10 @@
         page(r.state === 'trial_used' ? 'Your free trial has already been used' : 'Your card was declined',
           r.state === 'trial_used' ? 'Add a card to start your subscription and keep using RezTheLook.' : 'Nothing was charged. Try another card.');
         if (r.notice) content.appendChild(el('div', 'notice', r.notice));
-        content.appendChild(el('div', 'price', 'Due today: ' + money(o.monthly_amount, o.currency) + ' ' + taxWord(o) + ', then every month'));
+        // RUN 2d-2c: nothing is charged today; the first charge is just after midnight on the charge day.
+        content.appendChild(el('div', 'price', 'Your first charge is on ' + chargeDay(o) + ', just after midnight: ' + money(o.monthly_amount, o.currency) + ' ' + taxWord(o) + ', then every month.'));
         if (r.state === 'trial_used') {
-          consentButton('Pay ' + money(o.monthly_amount, o.currency) + ' ' + taxWord(o) + ' today', o.consent, r.consent_on_file === true, function (consent) {
+          consentButton('Start my subscription', o.consent, r.consent_on_file === true, function (consent) {
             call(consent ? { action: 'pay', consent: consent } : { action: 'pay' }).then(show).catch(failed);
           });
         }
@@ -224,7 +237,7 @@
       if (r.state === 'offer_changed' || r.state === 'confirm_trial') {
         if (!o.consent) return failed();
         page(r.state === 'offer_changed' ? 'Founding Pro spots just ran out' : 'Please confirm your free trial',
-          'Your free trial is ' + o.trial_days + ' days. Your first charge is on ' + day(o.first_charge_at) +
+          'Your free trial is ' + o.trial_days + ' days. Your first charge is on ' + chargeDay(o) +
           ': ' + money(o.monthly_amount, o.currency) + ' ' + taxWord(o) + '. You can cancel in the app before then.');
         if (r.notice) content.appendChild(el('div', 'notice', r.notice));
         return consentButton('Start my ' + o.trial_days + '-day free trial', o.consent, false, function (consent) {
