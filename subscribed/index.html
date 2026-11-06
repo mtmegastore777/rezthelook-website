@@ -54,6 +54,7 @@
       border: 1.5px solid #0D1B3E; font-family: inherit; font-size: 15px; font-weight: 600; padding: 14px 20px;
       border-radius: 14px; cursor: pointer; margin-bottom: 12px;
     }
+    .cancel-note { text-align: left; font-size: 14px; color: #444; line-height: 1.5; margin: 0 0 14px; }
     .subtext { font-size: 13px; color: #888; margin-top: 4px; }
     .cta.off { opacity: 0.6; }
     .notice { background-color: #fff3cd; border-radius: 12px; padding: 12px; font-size: 14px; color: #6b5100; margin-bottom: 16px; }
@@ -188,6 +189,8 @@
         b.disabled = true;
         send(given);
       };
+      // RUN 2d-2d-2: said right before the button, whatever the box says.
+      content.appendChild(el('p', 'cancel-note', 'You can cancel anytime. If you cancel during a paid month, you can keep using RezTheLook until that month ends. There’s no refund for the days left in that month.'));
       content.appendChild(b);
       return b;
     }
