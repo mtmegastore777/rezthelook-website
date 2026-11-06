@@ -61,6 +61,7 @@
     .consent a { color: #0D1B3E; font-weight: 600; }
     .consent-error { color: #b42318; font-size: 14px; font-weight: 600; margin: 0 0 12px; }
     .consent-error:empty { display: none; }
+    .cancel-note { text-align: left; font-size: 14px; color: #444; line-height: 1.5; margin: 0 0 14px; }
     .subtext { font-size: 13px; color: #888; margin-top: 14px; }
     .divider { height: 1px; background-color: rgba(212, 175, 55, 0.3); margin: 26px 0 18px; }
     .wordmark { font-family: 'Lora', Georgia, serif; font-weight: 700; font-size: 18px; color: #0D1B3E; }
@@ -202,6 +203,8 @@
       var b = el('button', 'cta', 'Add your card');
       var agreed = consentBox(o.consent, b);
       b.onclick = function () { var c = agreed(); if (c) goToCard(c); };
+      // RUN 2d-2d-2: said right before the button, whatever the box says.
+      content.appendChild(el('p', 'cancel-note', 'You can cancel anytime. If you cancel during a paid month, you can keep using RezTheLook until that month ends. There’s no refund for the days left in that month.'));
       content.appendChild(b);
       content.appendChild(el('p', 'subtext', 'Your card is saved securely by Stripe.'));
     }
