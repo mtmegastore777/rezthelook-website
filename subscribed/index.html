@@ -18,6 +18,9 @@
     RUN 2c-CONSENT: the box ticked on /subscribe covers the trial it described. A NEW box is shown here when
     the charge is not that one: "Pay … today" (unless the pro already agreed to this very charge, e.g. before a
     declined card), a lost Founding spot (a shorter trial), or a trial whose first charge moved to another day.
+    RUN 2d-2d-3: the finish is sent ONCE per page. The session id is kept in this tab (sessionStorage) and taken out
+    of the address, so a reload asks for the same answer instead of finishing again. While the server says it is still
+    working, the page asks again; before showing a failure from the automatic finish, it asks once more.
   -->
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -82,6 +85,18 @@
   <script>
     var FN = 'https://xwykrxbymkghdgzudsqi.supabase.co/functions/v1/billing-subscribe';
     var sessionId = new URLSearchParams(location.search).get('session_id') || '';
+    // RUN 2d-2d-3: kept in this tab and taken out of the address bar; a reload in this tab reads it back.
+    var STORE = 'rtl-subscribed-session';
+    if (sessionId) {
+      try { sessionStorage.setItem(STORE, sessionId); } catch (e) {}
+      try { history.replaceState(null, '', location.pathname); } catch (e) {}
+    } else {
+      try { sessionId = sessionStorage.getItem(STORE) || ''; } catch (e) {}
+    }
+    // RUN 2d-2d-3 (A-Q9): ONE TEST RUN ONLY. REMOVE these two lines and the two in call() in the next run that touches
+    // the website. How this page was loaded and a random id per load, so the server's log names why a finish came twice.
+    var NAV = ''; try { var nav = performance.getEntriesByType('navigation')[0]; NAV = (nav && nav.type) || ''; } catch (e) {}
+    var LOAD_ID = Math.random().toString(36).slice(2, 10);
     var content = document.getElementById('content');
     var AGAIN = 'Go back to the RezTheLook app and tap “Continue on rezthelook.com” again.';
     var TZ = '';
@@ -110,6 +125,8 @@
     function call(body) {
       body.session_id = sessionId;
       body.tz = TZ;
+      body.nav = NAV;          // RUN 2d-2d-3 (A-Q9): one test run only, remove
+      body.load_id = LOAD_ID;  // RUN 2d-2d-3 (A-Q9): one test run only, remove
       return fetch(FN, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })
         .then(function (r) { return r.json(); });
     }
@@ -119,7 +136,7 @@
       if (text) content.appendChild(el('p', 'message', text));
     }
     function appLink(cls) {
-      var a = el('a', cls || 'cta', 'Open the RezTheLook app');
+      var a = el('a', cls || 'cta', 'Open in RezTheLook app');
       a.href = 'rezthelook://subscribed';
       content.appendChild(a);
     }
@@ -195,8 +212,50 @@
       return b;
     }
 
+    // RUN 2d-2d-3: the server still waits for the first finish of this checkout. "Check again" asks it again (it never
+    // opens a new card page: the card is saved and the subscription may already exist).
+    function slow() {
+      page('This is taking longer than usual', 'Please wait a moment, then tap Check again.');
+      return button('Check again', 'cta', startFinish);
+    }
+
+    // RUN 2d-2d-3: the automatic finish. Sent once (finishing); while the answer is "working", asked again every 2
+    // seconds, at most 5 "working" answers, then the slow page. A failure (or no answer) is asked once more after 2
+    // seconds before it is shown: a second load's answer can say failed while the first load is still finishing.
+    var finishing = false, answered = false;
+    var WAIT_MS = 2000, MAX_WORKING = 5;
+    function startFinish() {
+      if (finishing) return;
+      finishing = true;
+      answered = false;
+      content.innerHTML = '';
+      content.appendChild(el('p', 'message', 'Setting up your subscription…'));
+      ask(0, false);
+    }
+    function settle(r) {
+      finishing = false;
+      answered = true;
+      if (r) show(r); else failed();
+    }
+    function ask(working, askedAgain) {
+      call({ action: 'finish' }).then(function (r) {
+        if (r.state === 'working') {
+          if (working + 1 >= MAX_WORKING) return settle(r);
+          return setTimeout(function () { ask(working + 1, askedAgain); }, WAIT_MS);
+        }
+        if ((r.state === 'failed' || r.state === 'error') && !askedAgain) {
+          return setTimeout(function () { ask(working, true); }, WAIT_MS);
+        }
+        settle(r);
+      }).catch(function () {
+        if (!askedAgain) return setTimeout(function () { ask(working, true); }, WAIT_MS);
+        settle(null);
+      });
+    }
+
     function show(r) {
       var o = r.offer || {};
+      if (r.state === 'working') return slow();
       if (r.state === 'refused' && (r.code === 'consent_changed' || r.code === 'consent_missing') && r.offer) {
         return show({ state: typeof o.trial_days === 'number' ? 'confirm_trial' : 'trial_used', offer: o, consent_on_file: false,
           notice: r.code === 'consent_missing' ? 'Please tick the box to continue.' : 'Something on this page changed. Please read it again and tick the box.' });
@@ -270,8 +329,13 @@
       failed();
     }
 
+    // RUN 2d-2d-3: a page brought back from the browser's back-forward cache asks again only if it never showed an answer
+    // (and never while its own finish is still on its way).
+    window.addEventListener('pageshow', function (e) {
+      if (e.persisted && sessionId && !answered) startFinish();
+    });
     if (!sessionId) failed();
-    else call({ action: 'finish' }).then(show).catch(failed);
+    else startFinish();
   </script>
 </body>
 </html>
